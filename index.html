@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#0a2540">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  /* --- আগের অরিজিনাল CSS হুবহু রাখা হলো --- */
   :root{
     --navy-950:#08192e; --navy-900:#0a2540; --navy-800:#12335c; --navy-700:#1a4373;
     --steel:#2e6ea6; --gold:#c99a3d; --gold-soft:#e8b64a; --rose:#b8305a; --rose-soft:#d85f88;
@@ -34,7 +33,6 @@
   
   main{ max-width:720px; margin:0 auto; padding:14px 16px 60px; }
   
-  /* --- Contact Card --- */
   .contact-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;}
   .card-top{ display:flex; align-items:flex-start; justify-content:space-between; }
   .rank-chip{ font-family:'JetBrains Mono',monospace; font-weight:800; font-size:12.5px; padding:6px 10px; border-radius:11px; color:#fff; background:linear-gradient(155deg, var(--steel), var(--navy-800)); }
@@ -47,7 +45,6 @@
   .btn-group a{ flex:1; padding:10px; text-decoration:none; border-radius:9px; font-weight:700; font-size:13px; color:#fff; text-align:center; }
   .call-btn{ background:var(--ok); } .wa-btn{ background:var(--wa); }
 
-  /* --- Admin Controls (Hidden by default) --- */
   .admin-actions { display: none; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
   .admin-mode .admin-actions { display: flex; }
   .btn-edit { background: var(--steel); color: #fff; border:none; padding: 8px; border-radius: 8px; cursor:pointer; flex:1; font-weight:bold;}
@@ -58,7 +55,6 @@
   #migrateBtn { background:var(--warn); margin-bottom: 20px;}
   .admin-mode #addBtn { display:block; }
   
-  /* --- Modal Styles --- */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(8,25,46,.7); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:999; padding:16px;}
   .modal-overlay.open { display:flex; }
   .modal-box { background:var(--surface); padding:20px; border-radius:var(--radius-lg); width:100%; max-width:380px; box-shadow:var(--shadow-lg); }
@@ -139,13 +135,12 @@
 </div>
 
 <script type="module">
-  // Firebase Modular SDK Imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-  // ⚠️⚠️⚠️ এখানে ফায়ারবেস কনসোল থেকে আপনার আসল Web Config কোড পেস্ট করুন ⚠️⚠️⚠️
- const firebaseConfig = {
+  // ⚠️⚠️⚠️ নিচে আপনার ফায়ারবেস কনসোল থেকে কপি করা আসল Web Config বসান ⚠️⚠️⚠️
+  const firebaseConfig = {
   apiKey: "AIzaSyBfc7WWaNkCHragcaxxbVjZDAT8wXtjOPY",
   authDomain: "cmh-savar-directory.firebaseapp.com",
   projectId: "cmh-savar-directory",
@@ -153,7 +148,6 @@
   messagingSenderId: "23640599257",
   appId: "1:23640599257:web:c9abc5f3e12bfe7c3dacc8"
 };
-
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -163,9 +157,6 @@
   let fetchedData = [];
   let currentFilter = 'all';
 
-  // ----------------------------------------------------
-  // ১. রিয়েল-টাইম ডাটা ফেচিং (সবার জন্য উন্মুক্ত)
-  // ----------------------------------------------------
   onSnapshot(directoryRef, (snapshot) => {
     fetchedData = [];
     snapshot.forEach((doc) => {
@@ -174,7 +165,6 @@
     
     document.getElementById('loading').style.display = 'none';
     
-    // Check if database is empty to show migration button to Admin
     if(fetchedData.length === 0 && auth.currentUser) {
       document.getElementById('migrateBtn').style.display = 'block';
     } else {
@@ -184,9 +174,6 @@
     renderUI();
   });
 
-  // ----------------------------------------------------
-  // ২. UI রেন্ডারিং এবং ফিল্টারিং
-  // ----------------------------------------------------
   function renderUI() {
     const listEl = document.getElementById('list');
     listEl.innerHTML = '';
@@ -195,7 +182,8 @@
     const filteredData = fetchedData.filter(item => {
       const matchSearch = (item.name && item.name.toLowerCase().includes(searchTerm)) || 
                           (item.army && item.army.toLowerCase().includes(searchTerm)) ||
-                          (item.rank && item.rank.toLowerCase().includes(searchTerm));
+                          (item.rank && item.rank.toLowerCase().includes(searchTerm)) ||
+                          (item.phone && item.phone.includes(searchTerm));
       const matchGender = currentFilter === 'all' || item.gender === currentFilter;
       return matchSearch && matchGender;
     });
@@ -204,6 +192,16 @@
       listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-3);">No data found.</div>`;
       return;
     }
+
+    // Rank sorting order
+    const rankOrder = ["SWO", "WO", "SGT", "CPL", "LCPL", "SNK", "SNK PMA"];
+    filteredData.sort((a, b) => {
+      let rankA = rankOrder.indexOf(a.rank);
+      let rankB = rankOrder.indexOf(b.rank);
+      if (rankA === -1) rankA = 99;
+      if (rankB === -1) rankB = 99;
+      return rankA - rankB;
+    });
 
     filteredData.forEach(item => {
       const isFemale = item.gender === 'female';
@@ -236,7 +234,6 @@
     });
   }
 
-  // Search and Tab Listeners
   document.getElementById('searchInput').addEventListener('input', renderUI);
   document.getElementById('genderTabs').addEventListener('click', (e) => {
     if(e.target.tagName === 'BUTTON') {
@@ -247,10 +244,6 @@
     }
   });
 
-
-  // ----------------------------------------------------
-  // ৩. অ্যাডমিন সিকিউরিটি (লগইন/লগআউট)
-  // ----------------------------------------------------
   onAuthStateChanged(auth, (user) => {
     if (user) {
       document.getElementById('mainContainer').classList.add('admin-mode');
@@ -274,7 +267,7 @@
     document.getElementById('doLogin').innerText = 'Verifying...';
     signInWithEmailAndPassword(auth, email, pass)
       .then(() => { 
-        closeModal('loginModal'); 
+        window.closeModal('loginModal'); 
         document.getElementById('adminEmail').value = '';
         document.getElementById('adminPass').value = '';
       })
@@ -282,9 +275,6 @@
       .finally(() => document.getElementById('doLogin').innerText = 'Login');
   };
 
-  // ----------------------------------------------------
-  // ৪. CRUD অপারেশন (Create, Update, Delete)
-  // ----------------------------------------------------
   document.getElementById('addBtn').onclick = () => {
     document.getElementById('editId').value = '';
     document.getElementById('modalTitle').innerText = 'Add New Personnel';
@@ -327,7 +317,7 @@
       } else {
         await addDoc(directoryRef, payload);
       }
-      closeModal('dataModal');
+      window.closeModal('dataModal');
     } catch(e) {
       alert("Permission Denied: You must be an admin.");
     } finally {
@@ -345,10 +335,7 @@
     document.getElementById(modalId).classList.remove('open');
   };
 
-  // ----------------------------------------------------
-  // ৫. ওয়ান-টাইম ডাটা মাইগ্রেশন (আপনার পুরনো ডাটা)
-  // ----------------------------------------------------
-  const DATA = [
+  const OLD_DATA = [
     {army:"BJO-73300", rank:"SWO", name:"Md Akram Hossain", phone:"01756192594", remarks:"SJCO", gender:"male"},
     {army:"BJO-73359", rank:"WO", name:"Md Aminul Islam", phone:"01718913391", remarks:"", gender:"male"},
     {army:"BJO-73406", rank:"WO", name:"Md Asaduzzaman Nur", phone:"01731282701", remarks:"Ward Master", gender:"male"},
@@ -416,9 +403,9 @@
   ];
 
   document.getElementById('migrateBtn').onclick = async () => {
-    if(!confirm("Are you sure you want to upload old data? Do this only ONCE!")) return;
+    if(!confirm("Are you sure you want to upload all old data? Do this only ONCE!")) return;
     
-    document.getElementById('migrateBtn').innerText = "Uploading... Please wait";
+    document.getElementById('migrateBtn').innerText = "Uploading... Please wait (Do not close tab)";
     document.getElementById('migrateBtn').disabled = true;
 
     try {
@@ -426,9 +413,11 @@
         await addDoc(directoryRef, person);
       }
       alert("Migration Successful! All old data is now in Firebase.");
-      document.getElementById('migrateBtn').style.display = 'none'; // Hide forever
+      document.getElementById('migrateBtn').style.display = 'none';
     } catch (e) {
       alert("Error uploading: " + e.message);
+      document.getElementById('migrateBtn').innerText = "⚠️ Migrate Old Data to Firebase (Click Once)";
+      document.getElementById('migrateBtn').disabled = false;
     }
   };
 </script>
