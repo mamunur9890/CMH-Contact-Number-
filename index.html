@@ -3,12 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>CMH Savar — JCO / OR & Emergency Directory</title>
+<title>CMH Savar — JCO / OR & Important Directory</title>
 <meta name="theme-color" content="#0a2540">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a2540'/%3E%3Cpath d='M44 20h12v24h24v12H56v24H44V56H20V44h24z' fill='%23e8b64a'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase App, Auth & Firestore SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <style>
 :root {
   --navy-950: #061322;
@@ -79,7 +85,7 @@ body {
   padding-bottom: 50px;
 }
 .mono { font-family: 'JetBrains Mono', monospace; }
-button, input, select { font-family: inherit; }
+button, input, select, textarea { font-family: inherit; }
 
 header {
   background:
@@ -108,6 +114,11 @@ header {
 .live-dot {
   width: 6px; height: 6px; background: #22c55e;
   border-radius: 50%; box-shadow: 0 0 8px #22c55e;
+}
+.cloud-sync-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; color: #a7f3d0; opacity: 0.9;
+  letter-spacing: normal; text-transform: none;
 }
 h1 {
   font-size: 18px; font-weight: 800; line-height: 1.25;
@@ -247,7 +258,7 @@ main { max-width: 760px; margin: 0 auto; padding: 14px 16px 20px; }
   margin-bottom: 12px; font-size: 12.5px; color: var(--text-3); font-weight: 600;
 }
 .list-header-meta b { color: var(--text-1); }
-.sort-wrap { display: flex; align-items: center; gap: 6px; }
+.sort-wrap { display: flex; align-items: center; gap: 8px; }
 .sort-select {
   padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text-2); font-size: 11.5px;
@@ -334,6 +345,10 @@ main { max-width: 760px; margin: 0 auto; padding: 14px 16px 20px; }
 }
 .quick-call { background: rgba(16,185,129,0.12); color: var(--ok-dark); }
 .quick-call:hover { background: var(--ok); color: #fff; }
+.quick-wa { background: rgba(34,197,94,0.14); color: #16a34a; }
+.quick-wa:hover { background: var(--wa); color: #fff; }
+:root[data-theme="dark"] .quick-wa { color: #4ade80; }
+:root[data-theme="dark"] .quick-wa:hover { color: #fff; }
 .quick-arrow { background: var(--surface-2); color: var(--text-3); border: 1px solid var(--border); }
 .quick-arrow svg { width: 16px; height: 16px; }
 
@@ -454,7 +469,7 @@ main { max-width: 760px; margin: 0 auto; padding: 14px 16px 20px; }
 .sheet-wa:hover { filter: brightness(0.92); }
 .sheet-btn svg { width: 18px; height: 18px; }
 
-/* ABOUT / DEVELOPER MODAL */
+/* ABOUT / DEVELOPER MODAL (CLEAN & PROFESSIONAL) */
 #aboutModal {
   display: none; position: fixed; inset: 0; z-index: 200;
   background: rgba(6,19,34,0.65); backdrop-filter: blur(8px);
@@ -462,41 +477,195 @@ main { max-width: 760px; margin: 0 auto; padding: 14px 16px 20px; }
 }
 #aboutModal.open { display: flex; }
 .modal-content {
-  background: var(--surface); border-radius: var(--radius-xl); width: 100%; max-width: 360px;
-  padding: 26px 22px 20px; text-align: center; box-shadow: var(--shadow-lg);
+  background: var(--surface); border-radius: var(--radius-xl); width: 100%; max-width: 350px;
+  padding: 26px 20px 18px; text-align: center; box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
   animation: pop .18s ease;
 }
 @keyframes pop { from { opacity:0; transform:scale(.94); } to { opacity:1; transform:scale(1); } }
 .modal-crest {
-  width: 54px; height: 54px; border-radius: 16px; margin: 0 auto 14px;
+  width: 52px; height: 52px; border-radius: 15px; margin: 0 auto 12px;
   background: linear-gradient(135deg, var(--gold-glow), var(--gold));
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
-.modal-crest svg { width: 28px; height: 28px; fill: var(--navy-950); }
+.modal-crest svg { width: 26px; height: 26px; fill: var(--navy-950); }
 .modal-content h3 { font-size: 17px; font-weight: 800; margin-bottom: 3px; color: var(--text-1); }
-.modal-content .role { font-size: 12px; color: var(--text-3); margin-bottom: 14px; font-weight: 600; }
+.modal-content .role { font-size: 12px; color: var(--text-3); margin-bottom: 12px; font-weight: 600; }
 .modal-box-inner {
   background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px; margin-bottom: 16px; text-align: center;
+  border-radius: 12px; padding: 12px; margin-bottom: 14px; text-align: center;
 }
 .modal-content .dev-name { font-size: 14.5px; font-weight: 800; color: var(--text-1); margin-bottom: 3px; }
 .modal-content .dev-unit { font-size: 12.5px; color: var(--text-2); line-height: 1.5; }
-.modal-content .ver-tag {
-  display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700;
-  color: var(--steel); background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 6px;
-}
+
 .modal-actions { display: flex; flex-direction: column; gap: 8px; }
 .modal-actions a {
-  text-decoration: none; padding: 11px; border-radius: 10px; font-weight: 700; font-size: 13.5px;
+  text-decoration: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 13.5px;
   display: flex; align-items: center; justify-content: center; gap: 7px; color: #fff; transition: .15s ease;
 }
 .modal-call { background: var(--ok); }
 .modal-wa { background: var(--wa); }
 .close-btn {
   background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2);
-  padding: 10px; width: 100%; margin-top: 10px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer;
+  padding: 9px; width: 100%; margin-top: 8px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer;
+}
+
+/* UNDERSTATED HIDDEN ADMIN TRIGGER BUTTON UNDER WHATSAPP */
+.admin-hidden-trigger-wrap {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.admin-hidden-btn {
+  background: none; border: none; color: var(--text-3);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 6px; transition: all .15s ease;
+}
+.admin-hidden-btn:hover {
+  color: var(--steel); background: var(--surface-2);
+}
+
+/* SEPARATE CLEAN LOGIN MODAL */
+#loginModal {
+  display: none; position: fixed; inset: 0; z-index: 240;
+  background: rgba(6,19,34,0.75); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 16px;
+}
+#loginModal.open { display: flex; }
+.login-card {
+  background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border);
+  width: 100%; max-width: 330px; padding: 22px 20px 18px; text-align: center; box-shadow: var(--shadow-lg);
+  animation: pop .18s ease;
+}
+.login-icon-box {
+  width: 44px; height: 44px; border-radius: 12px; margin: 0 auto 10px;
+  background: linear-gradient(135deg, var(--navy-850), var(--navy-950));
+  display: flex; align-items: center; justify-content: center; color: #fff;
+}
+.login-card h3 { font-size: 16px; font-weight: 800; color: var(--text-1); margin-bottom: 12px; }
+.auth-input-group { margin-bottom: 9px; text-align: left; }
+.auth-input-group label { display: block; font-size: 11.5px; font-weight: 700; color: var(--text-2); margin-bottom: 3px; }
+.auth-input {
+  width: 100%; padding: 8px 11px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--surface-2); color: var(--text-1); font-size: 13px; font-weight: 600; outline: none;
+}
+.auth-input:focus { border-color: var(--steel); background: var(--surface); }
+.auth-login-btn {
+  width: 100%; padding: 10px; border-radius: 8px; border: none; background: var(--steel);
+  color: #fff; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 4px; transition: .15s ease;
+}
+.auth-login-btn:hover { background: var(--navy-800); }
+.login-cancel-btn {
+  background: none; border: none; color: var(--text-3); font-size: 12px; font-weight: 600;
+  cursor: pointer; margin-top: 10px;
+}
+.login-cancel-btn:hover { color: var(--rose); }
+
+/* ADMIN MANAGEMENT DASHBOARD */
+#adminModal {
+  display: none; position: fixed; inset: 0; z-index: 250;
+  background: rgba(6,19,34,0.75); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 12px;
+}
+#adminModal.open { display: flex; }
+.admin-window {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
+  width: 100%; max-width: 680px; max-height: 90vh; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); overflow: hidden; animation: pop .18s ease;
+}
+.admin-header {
+  padding: 14px 18px; background: linear-gradient(135deg, var(--navy-950), var(--navy-850));
+  color: #fff; display: flex; justify-content: space-between; align-items: center;
+}
+.admin-header h2 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.admin-header-actions { display: flex; align-items: center; gap: 8px; }
+.admin-logout-link {
+  font-size: 11.5px; font-weight: 700; color: #fca5a5; background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3); padding: 4px 8px; border-radius: 6px; cursor: pointer;
+}
+.admin-close-btn {
+  width: 30px; height: 30px; border-radius: 6px; background: rgba(255,255,255,0.1);
+  border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.admin-toolbar {
+  padding: 11px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+}
+.admin-search-wrap { flex: 1; min-width: 180px; position: relative; }
+.admin-search-input {
+  width: 100%; padding: 8px 12px 8px 32px; border-radius: 8px; border: 1.5px solid var(--border);
+  font-size: 13px; background: var(--surface); color: var(--text-1); outline: none;
+}
+.admin-search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text-3);
+}
+.admin-actions-wrap { display: flex; gap: 6px; }
+.btn-admin-add {
+  padding: 8px 14px; border-radius: 8px; border: none; background: var(--ok);
+  color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.btn-admin-add:hover { background: var(--ok-dark); }
+.btn-admin-sync {
+  padding: 8px 12px; border-radius: 8px; border: 1.5px solid #f59e0b; background: #fffbeb;
+  color: #b45309; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+:root[data-theme="dark"] .btn-admin-sync {
+  background: #1c1917; border-color: #d97706; color: #fbbf24;
+}
+
+.admin-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px;
+}
+.admin-table-row {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  transition: all .15s ease;
+}
+.admin-table-row:hover { border-color: var(--steel-soft); background: var(--surface-2); }
+.row-left { flex: 1; min-width: 0; }
+.row-name { font-size: 14px; font-weight: 700; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
+.row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-edit {
+  padding: 6px 10px; border-radius: 6px; border: 1px solid var(--steel-soft);
+  background: rgba(37,99,235,0.08); color: var(--steel); font-size: 11.5px; font-weight: 700; cursor: pointer;
+}
+.btn-delete {
+  padding: 6px 10px; border-radius: 6px; border: 1px solid #fecaca;
+  background: #fef2f2; color: var(--rose); font-size: 11.5px; font-weight: 700; cursor: pointer;
+}
+
+/* ADD / EDIT FORM MODAL */
+#formModal {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(6,19,34,0.7); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 16px;
+}
+#formModal.open { display: flex; }
+.form-card {
+  background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--border);
+  width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: var(--shadow-lg);
+  animation: pop .18s ease;
+}
+.form-card h3 { font-size: 16.5px; font-weight: 800; color: var(--text-1); margin-bottom: 14px; }
+.form-group { margin-bottom: 11px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-2); margin-bottom: 4px; }
+.form-control {
+  width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--surface-2); color: var(--text-1); font-size: 13.5px; font-weight: 600; outline: none;
+}
+.form-control:focus { border-color: var(--steel); background: var(--surface); }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.form-buttons { display: flex; gap: 8px; margin-top: 16px; }
+.form-btn-save {
+  flex: 1; padding: 11px; border-radius: 10px; border: none; background: var(--steel);
+  color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.form-btn-cancel {
+  padding: 11px 18px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text-2); font-size: 14px; font-weight: 700; cursor: pointer;
 }
 
 .empty-box {
@@ -517,15 +686,19 @@ mark { background: rgba(232,182,74,0.35); color: inherit; border-radius: 3px; pa
         <svg viewBox="0 0 24 24"><path d="M12 2l2.3 5.3 5.7.5-4.3 3.8 1.3 5.6L12 14.3 7 17.2l1.3-5.6-4.3-3.8 5.7-.5z"/></svg>
       </div>
       <div class="title-box">
-        <div class="eyebrow"><span class="live-dot"></span> Bangladesh Army · CMH Savar</div>
+        <div class="eyebrow">
+          <span class="live-dot"></span> 
+          <span>Bangladesh Army · CMH Savar</span>
+          <span class="cloud-sync-badge" id="cloudSyncStatus">⚡ Cloud Ready</span>
+        </div>
         <h1>CMH Phone Directory</h1>
-        <div class="subtitle">JCO / OR & Emergency Contact Register</div>
+        <div class="subtitle">JCO / OR & Important Contact Register</div>
       </div>
       <div class="header-actions">
         <button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
           <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg>
         </button>
-        <button class="icon-btn" id="aboutBtn" title="Developer Information" aria-label="About Developer">
+        <button class="icon-btn" id="aboutBtn" title="Information" aria-label="Information">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         </button>
       </div>
@@ -537,7 +710,7 @@ mark { background: rgba(232,182,74,0.35); color: inherit; border-radius: 3px; pa
   <div class="controls-container">
     <div class="search-wrap">
       <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchBox" class="search-box" placeholder="Search by name, appointment, trade or mobile..." autocomplete="off">
+      <input type="text" id="searchBox" class="search-box" placeholder="Search name, appointment, trade or mobile..." autocomplete="off">
       <button class="clear-btn" id="clearBtn" aria-label="Clear search">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
@@ -635,19 +808,19 @@ mark { background: rgba(232,182,74,0.35); color: inherit; border-radius: 3px; pa
   </div>
 </div>
 
-<!-- ABOUT / DEVELOPER MODAL -->
+<!-- ABOUT / DEVELOPER MODAL (CLEAN & PROFESSIONAL) -->
 <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
   <div class="modal-content">
     <div class="modal-crest" aria-hidden="true">
       <svg viewBox="0 0 24 24"><path d="M12 2l2.3 5.3 5.7.5-4.3 3.8 1.3 5.6L12 14.3 7 17.2l1.3-5.6-4.3-3.8 5.7-.5z"/></svg>
     </div>
     <h3 id="aboutTitle">Developer Information</h3>
-    <div class="role">Maintained internally by the Ward Master Office</div>
+    <div class="role">Ward Master Office · CMH Savar</div>
     <div class="modal-box-inner">
       <div class="dev-name">Sergeant (MA) Md Mamun Or Rashid</div>
       <div class="dev-unit">Ward Master Office<br>Combined Military Hospital (CMH) Savar</div>
-      <div class="ver-tag">CMH Savar Directory • 175 Contacts</div>
     </div>
+
     <div class="modal-actions">
       <a class="modal-call" href="tel:01721148983">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.9.5 2.9.6a2 2 0 011.7 2z"/></svg>
@@ -658,190 +831,212 @@ mark { background: rgba(232,182,74,0.35); color: inherit; border-radius: 3px; pa
         WhatsApp
       </a>
     </div>
+
+    <!-- UNDERSTATED HIDDEN ADMIN TRIGGER BELOW WHATSAPP -->
+    <div class="admin-hidden-trigger-wrap">
+      <button type="button" id="openAdminLoginModalBtn" class="admin-hidden-btn">
+        <span>🔒 Admin Login</span>
+      </button>
+    </div>
+
     <button class="close-btn" id="closeAboutBtn">Close</button>
   </div>
 </div>
 
+<!-- SEPARATE SECURE LOGIN POPUP MODAL -->
+<div id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="login-card">
+    <div class="login-icon-box">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h3 id="loginTitle">Admin Login</h3>
+    
+    <div class="auth-input-group">
+      <label for="adminEmailInput">Admin Email</label>
+      <input type="email" id="adminEmailInput" class="auth-input" placeholder="admin@cmhsavar.com" autocomplete="email">
+    </div>
+    <div class="auth-input-group">
+      <label for="adminPassInput">Password</label>
+      <input type="password" id="adminPassInput" class="auth-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button type="button" id="adminLoginBtn" class="auth-login-btn">Login to Dashboard</button>
+    <button type="button" id="closeLoginModalBtn" class="login-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<!-- FULL ADMIN DATABASE MANAGEMENT MODAL -->
+<div id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+  <div class="admin-window">
+    <div class="admin-header">
+      <h2 id="adminTitle">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Directory Database Manager
+      </h2>
+      <div class="admin-header-actions">
+        <button type="button" id="adminLogoutBtn" class="admin-logout-link">Logout</button>
+        <button class="admin-close-btn" id="closeAdminWindowBtn" aria-label="Close Admin">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-toolbar">
+      <div class="admin-search-wrap">
+        <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Search name, phone or trade to edit..." autocomplete="off">
+      </div>
+      <div class="admin-actions-wrap">
+        <select id="adminTradeFilter" class="sort-select">
+          <option value="all">All Trades</option>
+        </select>
+        <button type="button" id="addNewContactBtn" class="btn-admin-add">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          Add New
+        </button>
+        <button type="button" id="syncInitialCloudBtn" class="btn-admin-sync" title="Upload all 175 contacts to Firestore Cloud">
+          <span>⚡ Sync 175 to Cloud</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-body" id="adminContactList">
+      <!-- Admin Rows Injected Here -->
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT CONTACT FORM MODAL -->
+<div id="formModal" role="dialog" aria-modal="true">
+  <div class="form-card">
+    <h3 id="formModalTitle">Add New Contact</h3>
+    <form id="contactForm">
+      <input type="hidden" id="formContactId">
+
+      <div class="form-group">
+        <label for="formCategory">Category</label>
+        <select id="formCategory" class="form-control" required>
+          <option value="personnel">Personnel (JCO / OR)</option>
+          <option value="important">Important Number (Office / Section)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="formName">Full Name (English) *</label>
+        <input type="text" id="formName" class="form-control" placeholder="e.g. Md Saidur Rahman" required>
+      </div>
+
+      <div class="form-group">
+        <label for="formNameBn">Name in Bengali (Optional)</label>
+        <input type="text" id="formNameBn" class="form-control" placeholder="e.g. মোঃ সাইদুর রহমান">
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="formPhone">Mobile Number *</label>
+          <input type="tel" id="formPhone" class="form-control mono" placeholder="017XXXXXXXX" required>
+        </div>
+        <div class="form-group">
+          <label for="formRankCode">Rank Badge *</label>
+          <input type="text" id="formRankCode" class="form-control" placeholder="e.g. SGT, WO, VIP, DUTY" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="formTrade">Trade / Branch *</label>
+          <input type="text" id="formTrade" class="form-control" placeholder="e.g. MA, OTA, Clerk, Important" required>
+        </div>
+        <div class="form-group">
+          <label for="formTradeBn">Trade (Bengali)</label>
+          <input type="text" id="formTradeBn" class="form-control" placeholder="e.g. এমএ, ওটিএ, জরুরি নম্বর">
+        </div>
+      </div>
+
+      <div id="personnelFields">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="formArmyEn">Army No (English)</label>
+            <input type="text" id="formArmyEn" class="form-control mono" placeholder="e.g. 2008637">
+          </div>
+          <div class="form-group">
+            <label for="formArmyBn">Army No (Bengali)</label>
+            <input type="text" id="formArmyBn" class="form-control" placeholder="e.g. ২০০৮৬৩৭">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label for="formAppt">Appointment / Duty</label>
+          <input type="text" id="formAppt" class="form-control" placeholder="e.g. Ward Master, CSM, ICU">
+        </div>
+        <div class="form-group">
+          <label for="formGender">Gender</label>
+          <select id="formGender" class="form-control">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="form-btn-save">Save to Cloud</button>
+        <button type="button" id="formCancelBtn" class="form-btn-cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-const RAW_DATA = [
-   {"id": "IMP-4", "sl": 4, "name": "MOIC MI ROOM", "name_bn": "MOIC MI ROOM", "rank_code": "MO", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093332", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MOIC MI ROOM", "gender": "male", "category": "important"},
-  {"id": "IMP-5", "sl": 5, "name": "DMO", "name_bn": "DMO", "rank_code": "MO", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093311", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DMO", "gender": "male", "category": "important"},
-  {"id": "IMP-6", "sl": 6, "name": "QM", "name_bn": "QM", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092910", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "QM", "gender": "male", "category": "important"},
-  {"id": "IMP-7", "sl": 7, "name": "MI ROOM", "name_bn": "MI ROOM", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093322", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MI ROOM", "gender": "male", "category": "important"},
-  {"id": "IMP-8", "sl": 8, "name": "WARD MASTER", "name_bn": "WARD MASTER", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092921", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "WARD MASTER", "gender": "male", "category": "important"},
-  {"id": "IMP-9", "sl": 9, "name": "ADMIN JCO", "name_bn": "ADMIN JCO", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090577", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "ADMIN JCO", "gender": "male", "category": "important"},
-  {"id": "IMP-10", "sl": 10, "name": "MT NCO", "name_bn": "MT NCO", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092934", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MT NCO", "gender": "male", "category": "important"},
-  {"id": "IMP-11", "sl": 11, "name": "ICU", "name_bn": "ICU", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092939", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "ICU", "gender": "male", "category": "important"},
-  {"id": "IMP-12", "sl": 12, "name": "HDU", "name_bn": "HDU", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090474", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "HDU", "gender": "male", "category": "important"},
-  {"id": "IMP-13", "sl": 13, "name": "OT", "name_bn": "OT", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090528", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "OT", "gender": "male", "category": "important"},
-  {"id": "IMP-14", "sl": 14, "name": "LAB", "name_bn": "LAB", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092923", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "LAB", "gender": "male", "category": "important"},
-  {"id": "IMP-15", "sl": 15, "name": "X-RAY", "name_bn": "X-RAY", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092942", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "X-RAY", "gender": "male", "category": "important"},
-  {"id": "IMP-16", "sl": 16, "name": "MED WARD", "name_bn": "MED WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093089", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MED WARD", "gender": "male", "category": "important"},
-  {"id": "IMP-17", "sl": 17, "name": "SURG WARD", "name_bn": "SURG WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090527", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "SURG WARD", "gender": "male", "category": "important"},
-  {"id": "IMP-18", "sl": 18, "name": "GY WARD", "name_bn": "GY WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092945", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "GY WARD", "gender": "male", "category": "important"},
-  {"id": "IMP-19", "sl": 19, "name": "FAMILY WARD", "name_bn": "FAMILY WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092936", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "FAMILY WARD", "gender": "male", "category": "important"},
-  {"id": "IMP-20", "sl": 20, "name": "DENTAL ONCALL", "name_bn": "DENTAL ONCALL", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093222", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DENTAL ONCALL", "gender": "male", "category": "important"},
-  {"id": "IMP-21", "sl": 21, "name": "DUTY CLK", "name_bn": "DUTY CLK", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092940", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DUTY CLK", "gender": "male", "category": "important"},
-  {"id": "IMP-22", "sl": 22, "name": "SASTHONEER", "name_bn": "SASTHONEER", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769095253", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "SASTHONEER", "gender": "male", "category": "important"},
-  {"id": "P-1", "sl": 1, "name": "Md Shafiqul Islam", "name_bn": "মোহাম্মদ শফিকুল ইসলাম", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73463", "army_bn": "বিজেও-৭৩৪৬৩", "phone": "01769248125", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-2", "sl": 2, "name": "Md Sanowar Hossain", "name_bn": "মোঃ ছানোয়ার হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2013111", "army_bn": "২০১৩১১১", "phone": "01763100677", "trade": "Clerk", "trade_bn": "ক্লার্ক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-3", "sl": 3, "name": "Md Humayun Kabir", "name_bn": "মোঃ হুমায়ুন কবির", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2013271", "army_bn": "২০১৩২৭১", "phone": "01743132093", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-4", "sl": 4, "name": "Md Shamim Al Mamun", "name_bn": "মোঃ শামীম আল মামুন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013703", "army_bn": "২০১৩৭০৩", "phone": "01719555521", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-5", "sl": 5, "name": "Abdullah Ibne Sarowar Shawon", "name_bn": "আব্দুল্লাহ ইবনে সারোয়ার শাওন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013728", "army_bn": "২০১৩৭২৮", "phone": "01666413764", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-6", "sl": 6, "name": "Rabbi Hossain", "name_bn": "রাব্বী হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014461", "army_bn": "২০১৪৪৬১", "phone": "01306401457", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-7", "sl": 7, "name": "Md Rowshan Habib", "name_bn": "মোঃ রওশন হাবীব", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015260", "army_bn": "২০১৫২৬০", "phone": "01480100970", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-8", "sl": 8, "name": "Farzana Akter Fahmida", "name_bn": "ফারজানা আক্তার ফাহমিদা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015655", "army_bn": "২০১৫৬৫৫", "phone": "01830988321", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-9", "sl": 9, "name": "Kamrun Nahar Kobita", "name_bn": "কামরুন নাহার কবিতা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2017047", "army_bn": "২০১৭০৪৭", "phone": "01984838770", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-10", "sl": 10, "name": "Abul Hossain", "name_bn": "আবুল হোসেন", "rank_code": "SWO", "rank_bn": "সিনিয়র ওয়ারেন্ট অফিসার", "army_en": "BJO-73220", "army_bn": "বিজেও-৭৩২২০", "phone": "01720192588", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-11", "sl": 11, "name": "Md Jahirul Islam", "name_bn": "মোঃ জহিরুল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2004388", "army_bn": "২০০৪৩৮৮", "phone": "01735008260", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-12", "sl": 12, "name": "Md Solaiman Khan", "name_bn": "মোঃ সোলায়মান খান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010465", "army_bn": "২০১০৪৬৫", "phone": "01788386501", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-13", "sl": 13, "name": "Md Amanullah", "name_bn": "মোঃ আমানুল্লাহ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2013115", "army_bn": "২০১৩১১৫", "phone": "01703780302", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-14", "sl": 14, "name": "Mahabul Alam", "name_bn": "মাহাবুল আলম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013727", "army_bn": "২০১৩৭২৭", "phone": "01705633723", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-15", "sl": 15, "name": "Md Ferdous Islam", "name_bn": "মোঃ ফেরদৌস ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014869", "army_bn": "২০১৪৮৬৯", "phone": "01619760340", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-16", "sl": 16, "name": "Md Jahangir Alam", "name_bn": "মোঃ জাহাঙ্গীর আলম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008759", "army_bn": "২০০৮৭৫৯", "phone": "01721791115", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-17", "sl": 17, "name": "Md Al Mamun", "name_bn": "মোঃ আল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009246", "army_bn": "২০০৯২৪৬", "phone": "01780508426", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-18", "sl": 18, "name": "Md Shamim Reza", "name_bn": "মোঃ শামীম রেজা", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009777", "army_bn": "২০০৯৭৭৭", "phone": "01724923152", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-19", "sl": 19, "name": "Mohsin Sarkar", "name_bn": "মহসীন সরকার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010663", "army_bn": "২০১০৬৬৩", "phone": "01647428913", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-20", "sl": 20, "name": "Md Alhaj Ali", "name_bn": "মোঃ আলহাজ আলী", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010369", "army_bn": "২০১০৩৬৯", "phone": "01708819018", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-21", "sl": 21, "name": "Selin Ahmed", "name_bn": "সেলিন আহম্মেদ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010696", "army_bn": "২০১০৬৯৬", "phone": "01795521075", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-22", "sl": 22, "name": "Md Robiul Islam", "name_bn": "মোঃ রবিউল ইসলাম", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2011118", "army_bn": "২০১১১১৮", "phone": "01723080302", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-23", "sl": 23, "name": "Imran Hossain", "name_bn": "ইমরান হোসাইন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "201378", "army_bn": "২০১৩৭৮", "phone": "01309493672", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-24", "sl": 24, "name": "Md Asadul Haque", "name_bn": "মোঃ আসাদুল হক", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014369", "army_bn": "২০১৪৩৬৯", "phone": "01908007795", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-25", "sl": 25, "name": "Shahinoor Hossain", "name_bn": "শাহিনুর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014891", "army_bn": "২০১৪৮৯১", "phone": "01926241310", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-26", "sl": 26, "name": "Md Ariful Islam", "name_bn": "মোঃ আরিফুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014963", "army_bn": "২০১৪৯৬৩", "phone": "01681717082", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-27", "sl": 27, "name": "Md Imran Hossain", "name_bn": "মোঃ ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015379", "army_bn": "২০১৫৩৭৯", "phone": "01786532530", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-28", "sl": 28, "name": "Md Asaduzzaman Nur", "name_bn": "মোহাম্মদ আসাদুজ্জামান", "rank_code": "SWO", "rank_bn": "সিনিয়র ওয়ারেন্ট অফিসার", "army_en": "BJO-73406", "army_bn": "বিজেও-৭৩৪০৬", "phone": "01731282701", "trade": "MA", "trade_bn": "এমএ", "appointment": "Ward Master", "gender": "male", "category": "personnel"},
-  {"id": "P-29", "sl": 29, "name": "Md Aminul Islam", "name_bn": "মোঃ আমিনুল ইসলাম", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73359", "army_bn": "বিজেও-৭৩৩৫৯", "phone": "01718913391", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-30", "sl": 30, "name": "Md Saidur Rahman", "name_bn": "মোঃ সাইদুর রহমান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008637", "army_bn": "২০০৮৬৩৭", "phone": "01711430146", "trade": "MA", "trade_bn": "এমএ", "appointment": "CSM", "gender": "male", "category": "personnel"},
-  {"id": "P-31", "sl": 31, "name": "Md Hasan Al Mamun", "name_bn": "মোঃ হাসানাল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008656", "army_bn": "২০০৮৬৫৬", "phone": "01731864121", "trade": "MA", "trade_bn": "এমএ", "appointment": "E&CD In Charge", "gender": "male", "category": "personnel"},
-  {"id": "P-32", "sl": 32, "name": "Md Nazrul Islam", "name_bn": "মোহাম্মদ নজরুল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008639", "army_bn": "২০০৮৬৩৯", "phone": "01914779142", "trade": "MA", "trade_bn": "এমএ", "appointment": "Snk Mess", "gender": "male", "category": "personnel"},
-  {"id": "P-33", "sl": 33, "name": "Homayun Kabir", "name_bn": "হুমায়ুন কবির", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009300", "army_bn": "২০০৯৩০০", "phone": "01769097347", "trade": "MA", "trade_bn": "এমএ", "appointment": "Surg Wd In Charge", "gender": "male", "category": "personnel"},
-  {"id": "P-34", "sl": 34, "name": "Md Abdullah Al Mamun", "name_bn": "মোঃ আবদুল্লাহ আল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009461", "army_bn": "২০০৯৪৬১", "phone": "01758124559", "trade": "MA", "trade_bn": "এমএ", "appointment": "Canteen NCO", "gender": "male", "category": "personnel"},
-  {"id": "P-35", "sl": 35, "name": "Md Mostofa Hossain", "name_bn": "মোঃ মোস্তফা হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009824", "army_bn": "২০০৯৮২৪", "phone": "01913385565", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-36", "sl": 36, "name": "Md Mamun Or Rashid", "name_bn": "মোঃ মামুন অর রশিদ", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009840", "army_bn": "২০০৯৮৪০", "phone": "01721149483", "trade": "MA", "trade_bn": "এমএ", "appointment": "W/M Office", "gender": "male", "category": "personnel"},
-  {"id": "P-37", "sl": 37, "name": "Arif Hossain", "name_bn": "আরিফ হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010314", "army_bn": "২০১০৩১৪", "phone": "01872303600", "trade": "MA", "trade_bn": "এমএ", "appointment": "Pharmacy", "gender": "male", "category": "personnel"},
-  {"id": "P-38", "sl": 38, "name": "Md Akul Hossain", "name_bn": "মোঃ আকুল হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2009475", "army_bn": "২০০৯৪৭৫", "phone": "01758124559", "trade": "MA", "trade_bn": "এমএ", "appointment": "Civil Incharge", "gender": "male", "category": "personnel"},
-  {"id": "P-39", "sl": 39, "name": "Md Delowar Hossain", "name_bn": "মোঃ দেলোয়ার হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010595", "army_bn": "২০১০৫৯৫", "phone": "01727803352", "trade": "MA", "trade_bn": "এমএ", "appointment": "Med Wd In Charge", "gender": "male", "category": "personnel"},
-  {"id": "P-40", "sl": 40, "name": "Ashraful Alam", "name_bn": "আশরাফুল আলম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011209", "army_bn": "২০১১২০৯", "phone": "01738675454", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-41", "sl": 41, "name": "Md Habibur Rahman", "name_bn": "মোঃ হাবিবুর রহমান", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011021", "army_bn": "২০১১০২১", "phone": "01614011363", "trade": "MA", "trade_bn": "এমএ", "appointment": "Medical Store", "gender": "male", "category": "personnel"},
-  {"id": "P-42", "sl": 42, "name": "Tahmina Akter Koli", "name_bn": "তাছলিমা আক্তার কলি", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012477", "army_bn": "২০১২৪৭৭", "phone": "01776635251", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-43", "sl": 43, "name": "Monira Khatun", "name_bn": "মনিরা খাতুন", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012483", "army_bn": "২০১২৪৮৩", "phone": "01632080161", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-44", "sl": 44, "name": "Papia Sultana", "name_bn": "পাপিয়া সুলতানা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012578", "army_bn": "২০১২৫৭৮", "phone": "01706128160", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-45", "sl": 45, "name": "Nazmun Nahar", "name_bn": "নাজমুন নাহার", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012487", "army_bn": "২০১২৪৮৭", "phone": "01709183427", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-46", "sl": 46, "name": "Most Tania Khatun", "name_bn": "মোছাঃ তানিয়া খাতুন", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012608", "army_bn": "২০১২৬০৮", "phone": "01304591367", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-47", "sl": 47, "name": "Monika Rani Saha", "name_bn": "মনিকা রানী সাহা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012848", "army_bn": "২০১২৮৪৮", "phone": "01709200355", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-48", "sl": 48, "name": "Most Safinaz Chowdhury", "name_bn": "মোছাঃ সাফিনাজ চৌধুরী", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012539", "army_bn": "২০১২৫৩৯", "phone": "01815444059", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-49", "sl": 49, "name": "Fatema Akter Liza", "name_bn": "ফাতেমা আক্তার লিজা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012684", "army_bn": "২০১২৬৮৪", "phone": "01703360560", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-50", "sl": 50, "name": "Md Rimon Khan", "name_bn": "মোঃ রিমন খান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013618", "army_bn": "২০১৩৬১৮", "phone": "01871951522", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-51", "sl": 51, "name": "Md Mosarof Hossain", "name_bn": "মোঃ মোশারফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013681", "army_bn": "২০১৩৬৮১", "phone": "01780517839", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-52", "sl": 52, "name": "Md Raihan", "name_bn": "মোঃ রায়হান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013684", "army_bn": "২০১৩৬৮৪", "phone": "01762625012", "trade": "MA", "trade_bn": "এমএ", "appointment": "Comdt Runner", "gender": "male", "category": "personnel"},
-  {"id": "P-53", "sl": 53, "name": "Md Moniruzzaman", "name_bn": "মোঃ মনিরুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014069", "army_bn": "২০১৪০৬৯", "phone": "01646344328", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-54", "sl": 54, "name": "Md Shawon Mia", "name_bn": "মোঃ শাওন মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014098", "army_bn": "২০১৪০৯৮", "phone": "01764653434", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-55", "sl": 55, "name": "Biplob Sarkar", "name_bn": "বিপ্লব সরকার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014128", "army_bn": "২০১৪১২৮", "phone": "01609602987", "trade": "MA", "trade_bn": "এমএ", "appointment": "Coy Munsi", "gender": "male", "category": "personnel"},
-  {"id": "P-56", "sl": 56, "name": "Md Juwel Rana", "name_bn": "মোঃ জুয়েল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014238", "army_bn": "২০১৪২৩৮", "phone": "01916213671", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-57", "sl": 57, "name": "Tanvir Hasan Hridoy", "name_bn": "তানভির হাসান হৃদয়", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014175", "army_bn": "২০১৪১৭৫", "phone": "01992327057", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-58", "sl": 58, "name": "Rakibul Hasan", "name_bn": "রাকিবুল হাসান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014409", "army_bn": "২০১৪৪০৯", "phone": "01916880026", "trade": "MA", "trade_bn": "এমএ", "appointment": "Temp Att", "gender": "male", "category": "personnel"},
-  {"id": "P-59", "sl": 59, "name": "Md Rumman Ali", "name_bn": "মোঃ রুমান আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014626", "army_bn": "২০১৪৬২৬", "phone": "01738179995", "trade": "MA", "trade_bn": "এমএ", "appointment": "W/M Office", "gender": "male", "category": "personnel"},
-  {"id": "P-60", "sl": 60, "name": "Lima Akter", "name_bn": "লিমা আক্তার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014692", "army_bn": "২০১৪৬৯২", "phone": "01946833557", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-61", "sl": 61, "name": "Md Maruf Hossain", "name_bn": "মোঃ মারুফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014568", "army_bn": "২০১৪৫৬৮", "phone": "01763041633", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-62", "sl": 62, "name": "Md Roni Ali", "name_bn": "মোঃ রনি আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015697", "army_bn": "২০১৫৬৯৭", "phone": "01308102976", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-63", "sl": 63, "name": "Md Shariful Islam", "name_bn": "মোঃ শরিফুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015719", "army_bn": "২০১৫৭১৯", "phone": "01643753516", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-64", "sl": 64, "name": "Md Nazmul Huda Rabbani", "name_bn": "মোঃ নাজমুল হুদা রব্বানী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015721", "army_bn": "২০১৫৭২১", "phone": "01608530441", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-65", "sl": 65, "name": "Md Taijul Islam Fakir", "name_bn": "মোঃ তাইজুল ইসলাম ফকির", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015730", "army_bn": "২০১৫৭৩০", "phone": "01319471566", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-66", "sl": 66, "name": "Md Mahbub Hossen Shordar", "name_bn": "মোঃ মাহাবুব হোসেন সরদার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015808", "army_bn": "২০১৫৮০৮", "phone": "01603646616", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-67", "sl": 67, "name": "Md Israfil", "name_bn": "মোঃ ইসরাফিল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015812", "army_bn": "২০১৫৮১২", "phone": "01743879489", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-68", "sl": 68, "name": "Md Wahid Ali", "name_bn": "মোঃ অহিদ আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015815", "army_bn": "২০১৫৮১৫", "phone": "01762356232", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-69", "sl": 69, "name": "Md Siam Sadik Sumon", "name_bn": "মোঃ সিয়াম সাদিক সুমন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015835", "army_bn": "২০১৫৮৩৫", "phone": "01635056992", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-70", "sl": 70, "name": "Md Maidul Islam", "name_bn": "মোঃ মাইদুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015849", "army_bn": "২০১৫৮৪৯", "phone": "01314155512", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-71", "sl": 71, "name": "Olija Islam Mou", "name_bn": "এলিজা ইসলাম মৌ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015893", "army_bn": "২০১৫৮৯৩", "phone": "01825440087", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-72", "sl": 72, "name": "Md Habibur Rahman", "name_bn": "মোঃ হাবিবুর রহমান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015829", "army_bn": "২০১৫৮২৯", "phone": "01714596151", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-73", "sl": 73, "name": "Md Minhajul Islam", "name_bn": "মোঃ মিনহাজুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016275", "army_bn": "২০১৬২৭৫", "phone": "01602706754", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-74", "sl": 74, "name": "Md Shadhath Hossain", "name_bn": "মোঃ শাহাদাৎ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016361", "army_bn": "২০১৬৩৬১", "phone": "01874152830", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-75", "sl": 75, "name": "Md Tanvir Hossain", "name_bn": "মোঃ তানভীর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016364", "army_bn": "২০১৬৩৬৪", "phone": "01884354262", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-76", "sl": 76, "name": "Md Forkan Islam", "name_bn": "মোঃ ফোরকান ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016366", "army_bn": "২০১৬৩৬৬", "phone": "01963014458", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-77", "sl": 77, "name": "Md Niaz Mahmud", "name_bn": "মোঃ নিয়াজ মাহামুদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016369", "army_bn": "২০১৬৩৬৯", "phone": "01832075437", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-78", "sl": 78, "name": "Md Abu Jaher Islam Shamim", "name_bn": "মোঃ আবু জাহের ইসলাম শামীম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016374", "army_bn": "২০১৬৩৭৪", "phone": "01788472796", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-79", "sl": 79, "name": "Md Mahmudul Haque", "name_bn": "মোঃ মাহমুদুল হক", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016461", "army_bn": "২০১৬৪৬১", "phone": "01830416842", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-80", "sl": 80, "name": "Md Younus Ali", "name_bn": "মোঃ ইউনুস আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016485", "army_bn": "২০১৬৪৮৫", "phone": "01956976314", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-81", "sl": 81, "name": "Most Tania Sultana", "name_bn": "মোছাঃ তানিয়া সুলতানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016521", "army_bn": "২০১৬৫২১", "phone": "01328683272", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-82", "sl": 82, "name": "Most Juthi Akter", "name_bn": "মোছাঃ জুথী খাতুন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016527", "army_bn": "২০১৬৫২৭", "phone": "01760155593", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-83", "sl": 83, "name": "Md Ashique Hossain", "name_bn": "মোঃ আসীক হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016532", "army_bn": "২০১৬৫৩২", "phone": "01971798926", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-84", "sl": 84, "name": "Md Rohit Akondo", "name_bn": "মোঃ রহিদ আকন্দ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016334", "army_bn": "২০১৬৩৩৪", "phone": "01721149591", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-85", "sl": 85, "name": "Most Sumaya Sultana Biba", "name_bn": "মোছাঃ সুমাইয়া সুলতানা বিবা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016537", "army_bn": "২০১৬৫৩৭", "phone": "01786022931", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-86", "sl": 86, "name": "Most Jobaida Akter Rotna", "name_bn": "মোছাঃ জোবায়দা আক্তার রত্না", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016547", "army_bn": "২০১৬৫৪৭", "phone": "01317377562", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-87", "sl": 87, "name": "Kamona Akter", "name_bn": "কামনা আক্তার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016576", "army_bn": "২০১৬৫৭৬", "phone": "01311119053", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-88", "sl": 88, "name": "Md Abu Jafor", "name_bn": "মোঃ আবু জাফর", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73459", "army_bn": "বিজেও-৭৩৪৫৯", "phone": "01304098450", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-89", "sl": 89, "name": "Md Yousuf Ali", "name_bn": "ইউসুফ আলী", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011294", "army_bn": "২০১১২৯৪", "phone": "01738706944", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-90", "sl": 90, "name": "Md Robiul Islam", "name_bn": "মোঃ রবিউল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011634", "army_bn": "২০১১৬৩৪", "phone": "01773975566", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-91", "sl": 91, "name": "Md Manik Mia", "name_bn": "মোঃ মানিক মিয়া", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011769", "army_bn": "২০১১৭৬৯", "phone": "01322832483", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-92", "sl": 92, "name": "Shapla Parvin", "name_bn": "শাপলা পারভীন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012506", "army_bn": "২০১২৫০৬", "phone": "01710370448", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-93", "sl": 93, "name": "Angufa Khatun", "name_bn": "অজ্ঞুফা খাতুন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012558", "army_bn": "২০১২৫৫৮", "phone": "01757854715", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-94", "sl": 94, "name": "Mishkat Jahan Asha", "name_bn": "মিশকাত জাহান আশা", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012627", "army_bn": "২০১২৬২৭", "phone": "01705259618", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-95", "sl": 95, "name": "Rakib Hossain", "name_bn": "রাকিব হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013554", "army_bn": "২০১৩৫৫৪", "phone": "01765115322", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-96", "sl": 96, "name": "Md Mobinuzzaman", "name_bn": "মোঃ মবিনুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014251", "army_bn": "২০১৪২৫১", "phone": "01956768146", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-97", "sl": 97, "name": "Rakibul Islam", "name_bn": "রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014318", "army_bn": "২০১৪৩১৮", "phone": "0194627143", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-98", "sl": 98, "name": "Md Mamun Mondol", "name_bn": "মোঃ মামুন মন্ডল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014328", "army_bn": "২০১৪৩২৮", "phone": "01326603491", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-99", "sl": 99, "name": "Md Al Amin Hossain", "name_bn": "মোঃ আল আমিন হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014404", "army_bn": "২০১৪৪০৪", "phone": "01869190871", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-100", "sl": 100, "name": "Bipul Hossain", "name_bn": "বিপুল হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014666", "army_bn": "২০১৪৬৬৬", "phone": "01975482628", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-101", "sl": 101, "name": "Md Shakil Mia", "name_bn": "মোঃ শাকিল মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014654", "army_bn": "২০১৪৬৫৪", "phone": "01740467797", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-102", "sl": 102, "name": "Md Mamun Hossain", "name_bn": "মোঃ মামুন হোসাইন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015144", "army_bn": "২০১৫১৪৪", "phone": "01615306606", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-103", "sl": 103, "name": "Md Mehedi Hasan Wasi", "name_bn": "মোঃ মেহেদী হাসান ওয়াসী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011551", "army_bn": "২০১১৫৫১", "phone": "01309412437", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-104", "sl": 104, "name": "Md Imran", "name_bn": "মোঃ ইমরান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011561", "army_bn": "২০১১৫৬১", "phone": "01319176062", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-105", "sl": 105, "name": "Md Sultan Shahria", "name_bn": "মোঃ সুলতান শাহরিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011564", "army_bn": "২০১১৫৬৪", "phone": "01821469538", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-106", "sl": 106, "name": "Md Nazmul Islam", "name_bn": "মোঃ নাজমুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015071", "army_bn": "২০১৫০৭১", "phone": "01992826381", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-107", "sl": 107, "name": "Rownoki Jannat", "name_bn": "রৌনকী জান্নাত", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015545", "army_bn": "২০১৫৫৪৫", "phone": "01763984333", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-108", "sl": 108, "name": "Md Abdul Malek", "name_bn": "মোঃ আব্দুল মালেক", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008199", "army_bn": "২০০৮১৯৯", "phone": "01745235542", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-109", "sl": 109, "name": "Md Parvez Akter", "name_bn": "মোঃ পারভেজ আক্তার", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011572", "army_bn": "২০১১৫৭২", "phone": "01716964453", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-110", "sl": 110, "name": "Rima Akter", "name_bn": "রীমা আক্তার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012451", "army_bn": "২০১২৪৫১", "phone": "01617177142", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-111", "sl": 111, "name": "Md Manik Rashid", "name_bn": "মোঃ মানিক রশিদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014326", "army_bn": "২০১৪৩২৬", "phone": "01635124555", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-112", "sl": 112, "name": "Md Rakibul Islam", "name_bn": "মোঃ রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014704", "army_bn": "২০১৪৭০৪", "phone": "01781339541", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-113", "sl": 113, "name": "Md Dipu Khan", "name_bn": "মোঃ দিপু খাঁন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015192", "army_bn": "২০১৫১৯২", "phone": "01765189630", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-114", "sl": 114, "name": "Md Habib Ullah Talukder", "name_bn": "মোহাম্মদ হাবিব উল্লাহ তালুকদার", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-এনওয়াইএি", "army_bn": "বিজেও-এনওয়াইএি", "phone": "01715254193", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-115", "sl": 115, "name": "Md Tamzid Hossain", "name_bn": "মোঃ তামজিদ হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010555", "army_bn": "২০১০৫৫৫", "phone": "01735820660", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-116", "sl": 116, "name": "Tamanna Kumkum", "name_bn": "তামান্না কুমকুম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012489", "army_bn": "২০১২৪৮৯", "phone": "01718867677", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-117", "sl": 117, "name": "Md Ripon Ali", "name_bn": "মোঃ রিপন আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015162", "army_bn": "২০১৫১৬২", "phone": "01798787201", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-118", "sl": 118, "name": "Md Mohiuddin Sheikh", "name_bn": "মোঃ মহিউদ্দিন শেখ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015166", "army_bn": "২০১৫১৬৬", "phone": "01940659229", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-119", "sl": 119, "name": "Safat", "name_bn": "সাফাত", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016229", "army_bn": "২০১৬২২৯", "phone": "01323417892", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-120", "sl": 120, "name": "Md Fahad Ahmed", "name_bn": "মোঃ ফাহাদ আহমেদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016233", "army_bn": "২০১৬২৩৩", "phone": "01759094919", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-121", "sl": 121, "name": "Md Kamal Uddin", "name_bn": "মোঃ কামাল উদ্দিন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008379", "army_bn": "২০০৮৩৭৯", "phone": "01889393442", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-122", "sl": 122, "name": "Md Faruk Hossain", "name_bn": "মোঃ ফারুক হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011763", "army_bn": "২০১১৭৬৩", "phone": "01740085562", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-123", "sl": 123, "name": "Imran Hossain", "name_bn": "ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014288", "army_bn": "২০১৪২৮৮", "phone": "01739713943", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-124", "sl": 124, "name": "Al Amin Hossain", "name_bn": "আল আমিন হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014691", "army_bn": "২০১৪৬৯১", "phone": "01310842016", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-125", "sl": 125, "name": "Md Sohel Rana", "name_bn": "মোঃ সোহেল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015067", "army_bn": "২০১৫০৬৭", "phone": "01761216213", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-126", "sl": 126, "name": "Md Faisal Alam", "name_bn": "মোঃ ফয়সাল আলম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011885", "army_bn": "২০১১৮৮৫", "phone": "01671685581", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-127", "sl": 127, "name": "Mariam Khatun", "name_bn": "মরিয়ম খাতুন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012976", "army_bn": "২০১২৯৭৬", "phone": "01788976415", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-128", "sl": 128, "name": "Md Limon Dhali", "name_bn": "মোঃ লিমন ঢালী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013905", "army_bn": "২০১৩৯০৫", "phone": "01756689073", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-129", "sl": 129, "name": "Rakibul Islam", "name_bn": "রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014140", "army_bn": "২০১৪১৪০", "phone": "01648317902", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-130", "sl": 130, "name": "Md Torikul Islam", "name_bn": "মোঃ তরিকুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014586", "army_bn": "২০১৪৫৮৬", "phone": "01788428158", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-131", "sl": 131, "name": "Ibrahim Khalil", "name_bn": "ইব্রাহিম খলিল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014688", "army_bn": "২০১৪৬৮৮", "phone": "01994519094", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-132", "sl": 132, "name": "Md Faruk Khan", "name_bn": "মোহাম্মদ ফারুক খান", "rank_code": "SWO", "rank_bn": "সিনিঃ ওয়াঃ অফিঃ", "army_en": "BJO-73371", "army_bn": "বিজেও-৭৩৩৭১", "phone": "01733501606", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-133", "sl": 133, "name": "Md Abdul Kader", "name_bn": "মোঃ আব্দুল কাদের", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011409", "army_bn": "২০১১৪০৯", "phone": "01686520202", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-134", "sl": 134, "name": "Sabrina M Sayla", "name_bn": "সাবরিনা এম সায়লা", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012672", "army_bn": "২০১২৬৭২", "phone": "01639252574", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-135", "sl": 135, "name": "Jesmin Akter", "name_bn": "জেসমিন আক্তার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012361", "army_bn": "২০১২৩৬১", "phone": "01734745609", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-136", "sl": 136, "name": "Sultana Razia", "name_bn": "সুলতানা রাজিয়া", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012701", "army_bn": "২০১২৭০১", "phone": "01605068354", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-137", "sl": 137, "name": "Md Tanvir Hossain", "name_bn": "মোঃ তানভীর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013547", "army_bn": "২০১৩৫৪৭", "phone": "01773097239", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-138", "sl": 138, "name": "Md Jahirul Islam", "name_bn": "মোঃ জহিরুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013633", "army_bn": "২০১৩৬৩৩", "phone": "01607354583", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-139", "sl": 139, "name": "Sojib Ahmed", "name_bn": "সজীব আহম্মেদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013682", "army_bn": "২০১৩৬৮২", "phone": "01828651330", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-140", "sl": 140, "name": "Md Shahadul Islam", "name_bn": "মোঃ শাহাদুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011441", "army_bn": "২০১১৪৪১", "phone": "01755081452", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-141", "sl": 141, "name": "Nizam Uddin", "name_bn": "নিজাম উদ্দিন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014574", "army_bn": "২০১৪৫৭৪", "phone": "01779944495", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-142", "sl": 142, "name": "Md Imran Hossain", "name_bn": "মোঃ ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014612", "army_bn": "২০১৪৬১২", "phone": "01754920485", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-143", "sl": 143, "name": "Fatema Akter", "name_bn": "ফাতেমা আক্তার", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012924", "army_bn": "২০১২৯২৪", "phone": "01601036461", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "female", "category": "personnel"},
-  {"id": "P-144", "sl": 144, "name": "Md Sohanur Rahman", "name_bn": "মোঃ সোহানুর রহমান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015200", "army_bn": "২০১৫২০০", "phone": "01771738486", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-145", "sl": 145, "name": "Md Shakil Rana", "name_bn": "মোঃ শাকিল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014793", "army_bn": "২০১৪৭৯৩", "phone": "01642269415", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-146", "sl": 146, "name": "Md Jahangir Alam", "name_bn": "মোঃ জাহাঙ্গীর আলম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014361", "army_bn": "২০১৪৩৬১", "phone": "01760238318", "trade": "PMA", "trade_bn": "পিএমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-147", "sl": 147, "name": "Md Shadhin Mia", "name_bn": "মোঃ স্বাধীন মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015016", "army_bn": "২০১৫০১৬", "phone": "01602371649", "trade": "PMA", "trade_bn": "পিএমএ", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-148", "sl": 148, "name": "Md Nasir Uddin", "name_bn": "মোঃ নাসির উদ্দিন", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-77690", "army_bn": "বিজেও-৭৭৬৯০", "phone": "01758177400", "trade": "AOHM", "trade_bn": "এওএইচএম", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-149", "sl": 149, "name": "Md Jaminur Rahman", "name_bn": "মোঃ জামিনুর রহমান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2414279", "army_bn": "২৪১৪২৭৯", "phone": "01763820851", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-150", "sl": 150, "name": "Ali Ahmed", "name_bn": "আলী আহমেদ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2414476", "army_bn": "২৪১৪৪৭৬", "phone": "01734185595", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-151", "sl": 151, "name": "Md Khalid Hasan", "name_bn": "মোঃ খালিদ হাসান", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2417145", "army_bn": "২৪১৭১৪৫", "phone": "01766609828", "trade": "TBV", "trade_bn": "টিবিভি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-152", "sl": 152, "name": "Md Akhtaruzzaman", "name_bn": "মোঃ আখতারুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2419132", "army_bn": "২৪১৯১৩২", "phone": "01787087502", "trade": "TBV", "trade_bn": "টিবিভি", "appointment": "", "gender": "male", "category": "personnel"},
-  {"id": "P-153", "sl": 153, "name": "A S M Ashraf Hossain", "name_bn": "এ এস এম আশরাফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2420025", "army_bn": "২৪২০০২৫", "phone": "01798558765", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"}
-];
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDLpiOGqT5WLX4u0E7sZCPB4r-VhPvxBDc",
+  authDomain: "phone-number-cmh-savar.firebaseapp.com",
+  projectId: "phone-number-cmh-savar",
+  storageBucket: "phone-number-cmh-savar.firebasestorage.app",
+  messagingSenderId: "117023548683",
+  appId: "1:117023548683:web:31e93ecf85b140e339ee0e"
+};
+
+// Initialize Firebase, Auth & Firestore
+let db = null;
+let auth = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  auth = firebase.auth();
+  console.log("Firebase App, Auth & Firestore initialized!");
+} catch(err) {
+  console.warn("Firebase Init Error:", err);
+}
+
+// 175 Core Initial Contacts Database (Always available even offline)
+const DEFAULT_RAW_DATA = [{"id": "IMP-1", "sl": 1, "name": "COMDT CMH", "name_bn": "COMDT CMH", "rank_code": "VIP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092906", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "COMDT CMH", "gender": "male", "category": "important"}, {"id": "IMP-2", "sl": 2, "name": "COMDT MDC", "name_bn": "COMDT MDC", "rank_code": "VIP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093200", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "COMDT MDC", "gender": "male", "category": "important"}, {"id": "IMP-3", "sl": 3, "name": "DY COMDT", "name_bn": "DY COMDT", "rank_code": "VIP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092908", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DY COMDT", "gender": "male", "category": "important"}, {"id": "IMP-4", "sl": 4, "name": "MOIC MI ROOM", "name_bn": "MOIC MI ROOM", "rank_code": "MO", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093332", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MOIC MI ROOM", "gender": "male", "category": "important"}, {"id": "IMP-5", "sl": 5, "name": "DMO", "name_bn": "DMO", "rank_code": "MO", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093311", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DMO", "gender": "male", "category": "important"}, {"id": "IMP-6", "sl": 6, "name": "QM", "name_bn": "QM", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092910", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "QM", "gender": "male", "category": "important"}, {"id": "IMP-7", "sl": 7, "name": "MI ROOM", "name_bn": "MI ROOM", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093322", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MI ROOM", "gender": "male", "category": "important"}, {"id": "IMP-8", "sl": 8, "name": "WARD MASTER", "name_bn": "WARD MASTER", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092921", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "WARD MASTER", "gender": "male", "category": "important"}, {"id": "IMP-9", "sl": 9, "name": "ADMIN JCO", "name_bn": "ADMIN JCO", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090577", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "ADMIN JCO", "gender": "male", "category": "important"}, {"id": "IMP-10", "sl": 10, "name": "MT NCO", "name_bn": "MT NCO", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092934", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MT NCO", "gender": "male", "category": "important"}, {"id": "IMP-11", "sl": 11, "name": "ICU", "name_bn": "ICU", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092939", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "ICU", "gender": "male", "category": "important"}, {"id": "IMP-12", "sl": 12, "name": "HDU", "name_bn": "HDU", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090474", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "HDU", "gender": "male", "category": "important"}, {"id": "IMP-13", "sl": 13, "name": "OT", "name_bn": "OT", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090528", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "OT", "gender": "male", "category": "important"}, {"id": "IMP-14", "sl": 14, "name": "LAB", "name_bn": "LAB", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092923", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "LAB", "gender": "male", "category": "important"}, {"id": "IMP-15", "sl": 15, "name": "X-RAY", "name_bn": "X-RAY", "rank_code": "EMRG", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092942", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "X-RAY", "gender": "male", "category": "important"}, {"id": "IMP-16", "sl": 16, "name": "MED WARD", "name_bn": "MED WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093089", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "MED WARD", "gender": "male", "category": "important"}, {"id": "IMP-17", "sl": 17, "name": "SURG WARD", "name_bn": "SURG WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769090527", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "SURG WARD", "gender": "male", "category": "important"}, {"id": "IMP-18", "sl": 18, "name": "GY WARD", "name_bn": "GY WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092945", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "GY WARD", "gender": "male", "category": "important"}, {"id": "IMP-19", "sl": 19, "name": "FAMILY WARD", "name_bn": "FAMILY WARD", "rank_code": "DUTY", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092936", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "FAMILY WARD", "gender": "male", "category": "important"}, {"id": "IMP-20", "sl": 20, "name": "DENTAL ONCALL", "name_bn": "DENTAL ONCALL", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769093222", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DENTAL ONCALL", "gender": "male", "category": "important"}, {"id": "IMP-21", "sl": 21, "name": "DUTY CLK", "name_bn": "DUTY CLK", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769092940", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "DUTY CLK", "gender": "male", "category": "important"}, {"id": "IMP-22", "sl": 22, "name": "SASTHONEER", "name_bn": "SASTHONEER", "rank_code": "IMP", "rank_bn": "ইম্পর্টেন্ট", "army_en": "N/A", "army_bn": "প্রযোজ্য নয়", "phone": "01769095253", "trade": "Important", "trade_bn": "জরুরি নম্বর", "appointment": "SASTHONEER", "gender": "male", "category": "important"}, {"id": "P-1", "sl": 1, "name": "Md Shafiqul Islam", "name_bn": "মোহাম্মদ শফিকুল ইসলাম", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73463", "army_bn": "বিজেও-৭৩৪৬৩", "phone": "01769248125", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-2", "sl": 2, "name": "Md Sanowar Hossain", "name_bn": "মোঃ ছানোয়ার হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2013111", "army_bn": "২০১৩১১১", "phone": "01763100677", "trade": "Clerk", "trade_bn": "ক্লার্ক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-3", "sl": 3, "name": "Md Humayun Kabir", "name_bn": "মোঃ হুমায়ুন কবির", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2013271", "army_bn": "২০১৩২৭১", "phone": "01743132093", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-4", "sl": 4, "name": "Md Shamim Al Mamun", "name_bn": "মোঃ শামীম আল মামুন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013703", "army_bn": "২০১৩৭০৩", "phone": "01719555521", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-5", "sl": 5, "name": "Abdullah Ibne Sarowar Shawon", "name_bn": "আব্দুল্লাহ ইবনে সারোয়ার শাওন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013728", "army_bn": "২০১৩৭২৮", "phone": "01666413764", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-6", "sl": 6, "name": "Rabbi Hossain", "name_bn": "রাব্বী হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014461", "army_bn": "২০১৪৪৬১", "phone": "01306401457", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-7", "sl": 7, "name": "Md Rowshan Habib", "name_bn": "মোঃ রওশন হাবীব", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015260", "army_bn": "২০১৫২৬০", "phone": "01480100970", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-8", "sl": 8, "name": "Farzana Akter Fahmida", "name_bn": "ফারজানা আক্তার ফাহমিদা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015655", "army_bn": "২০১৫৬৫৫", "phone": "01830988321", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-9", "sl": 9, "name": "Kamrun Nahar Kobita", "name_bn": "কামরুন নাহার কবিতা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2017047", "army_bn": "২০১৭০৪৭", "phone": "01984838770", "trade": "Clerk", "trade_bn": "করণিক", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-10", "sl": 10, "name": "Abul Hossain", "name_bn": "আবুল হোসেন", "rank_code": "SWO", "rank_bn": "সিনিয়র ওয়ারেন্ট অফিসার", "army_en": "BJO-73220", "army_bn": "বিজেও-৭৩২২০", "phone": "01720192588", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-11", "sl": 11, "name": "Md Jahirul Islam", "name_bn": "মোঃ জহিরুল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2004388", "army_bn": "২০০৪৩৮৮", "phone": "01735008260", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-12", "sl": 12, "name": "Md Solaiman Khan", "name_bn": "মোঃ সোলায়মান খান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010465", "army_bn": "২০১০৪৬৫", "phone": "01788386501", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-13", "sl": 13, "name": "Md Amanullah", "name_bn": "মোঃ আমানুল্লাহ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2013115", "army_bn": "২০১৩১১৫", "phone": "01703780302", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-14", "sl": 14, "name": "Mahabul Alam", "name_bn": "মাহাবুল আলম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013727", "army_bn": "২০১৩৭২৭", "phone": "01705633723", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-15", "sl": 15, "name": "Md Ferdous Islam", "name_bn": "মোঃ ফেরদৌস ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014869", "army_bn": "২০১৪৮৬৯", "phone": "01619760340", "trade": "SMT", "trade_bn": "এসএমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-16", "sl": 16, "name": "Md Jahangir Alam", "name_bn": "মোঃ জাহাঙ্গীর আলম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008759", "army_bn": "২০০৮৭৫৯", "phone": "01721791115", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-17", "sl": 17, "name": "Md Al Mamun", "name_bn": "মোঃ আল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009246", "army_bn": "২০০৯২৪৬", "phone": "01780508426", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-18", "sl": 18, "name": "Md Shamim Reza", "name_bn": "মোঃ শামীম রেজা", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009777", "army_bn": "২০০৯৭৭৭", "phone": "01724923152", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-19", "sl": 19, "name": "Mohsin Sarkar", "name_bn": "মহসীন সরকার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010663", "army_bn": "২০১০৬৬৩", "phone": "01647428913", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-20", "sl": 20, "name": "Md Alhaj Ali", "name_bn": "মোঃ আলহাজ আলী", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010369", "army_bn": "২০১০৩৬৯", "phone": "01708819018", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-21", "sl": 21, "name": "Selin Ahmed", "name_bn": "সেলিন আহম্মেদ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010696", "army_bn": "২০১০৬৯৬", "phone": "01795521075", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-22", "sl": 22, "name": "Md Robiul Islam", "name_bn": "মোঃ রবিউল ইসলাম", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2011118", "army_bn": "২০১১১১৮", "phone": "01723080302", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-23", "sl": 23, "name": "Imran Hossain", "name_bn": "ইমরান হোসাইন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "201378", "army_bn": "২০১৩৭৮", "phone": "01309493672", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-24", "sl": 24, "name": "Md Asadul Haque", "name_bn": "মোঃ আসাদুল হক", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014369", "army_bn": "২০১৪৩৬৯", "phone": "01908007795", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-25", "sl": 25, "name": "Shahinoor Hossain", "name_bn": "শাহিনুর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014891", "army_bn": "২০১৪৮৯১", "phone": "01926241310", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-26", "sl": 26, "name": "Md Ariful Islam", "name_bn": "মোঃ আরিফুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014963", "army_bn": "২০১৪৯৬৩", "phone": "01681717082", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-27", "sl": 27, "name": "Md Imran Hossain", "name_bn": "মোঃ ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015379", "army_bn": "২০১৫৩৭৯", "phone": "01786532530", "trade": "MT", "trade_bn": "এমটি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-28", "sl": 28, "name": "Md Asaduzzaman Nur", "name_bn": "মোহাম্মদ আসাদুজ্জামান", "rank_code": "SWO", "rank_bn": "সিনিয়র ওয়ারেন্ট অফিসার", "army_en": "BJO-73406", "army_bn": "বিজেও-৭৩৪০৬", "phone": "01731282701", "trade": "MA", "trade_bn": "এমএ", "appointment": "Ward Master", "gender": "male", "category": "personnel"}, {"id": "P-29", "sl": 29, "name": "Md Aminul Islam", "name_bn": "মোঃ আমিনুল ইসলাম", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73359", "army_bn": "বিজেও-৭৩৩৫৯", "phone": "01718913391", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-30", "sl": 30, "name": "Md Saidur Rahman", "name_bn": "মোঃ সাইদুর রহমান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008637", "army_bn": "২০০৮৬৩৭", "phone": "01711430146", "trade": "MA", "trade_bn": "এমএ", "appointment": "CSM", "gender": "male", "category": "personnel"}, {"id": "P-31", "sl": 31, "name": "Md Hasan Al Mamun", "name_bn": "মোঃ হাসানাল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008656", "army_bn": "২০০৮৬৫৬", "phone": "01731864121", "trade": "MA", "trade_bn": "এমএ", "appointment": "E&CD In Charge", "gender": "male", "category": "personnel"}, {"id": "P-32", "sl": 32, "name": "Md Nazrul Islam", "name_bn": "মোহাম্মদ নজরুল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008639", "army_bn": "২০০৮৬৩৯", "phone": "01914779142", "trade": "MA", "trade_bn": "এমএ", "appointment": "Snk Mess", "gender": "male", "category": "personnel"}, {"id": "P-33", "sl": 33, "name": "Homayun Kabir", "name_bn": "হুমায়ুন কবির", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009300", "army_bn": "২০০৯৩০০", "phone": "01769097347", "trade": "MA", "trade_bn": "এমএ", "appointment": "Surg Wd In Charge", "gender": "male", "category": "personnel"}, {"id": "P-34", "sl": 34, "name": "Md Abdullah Al Mamun", "name_bn": "মোঃ আবদুল্লাহ আল মামুন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009461", "army_bn": "২০০৯৪৬১", "phone": "01758124559", "trade": "MA", "trade_bn": "এমএ", "appointment": "Canteen NCO", "gender": "male", "category": "personnel"}, {"id": "P-35", "sl": 35, "name": "Md Mostofa Hossain", "name_bn": "মোঃ মোস্তফা হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009824", "army_bn": "২০০৯৮২৪", "phone": "01913385565", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-36", "sl": 36, "name": "Md Mamun Or Rashid", "name_bn": "মোঃ মামুন অর রশিদ", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2009840", "army_bn": "২০০৯৮৪০", "phone": "01721149483", "trade": "MA", "trade_bn": "এমএ", "appointment": "W/M Office", "gender": "male", "category": "personnel"}, {"id": "P-37", "sl": 37, "name": "Arif Hossain", "name_bn": "আরিফ হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010314", "army_bn": "২০১০৩১৪", "phone": "01872303600", "trade": "MA", "trade_bn": "এমএ", "appointment": "Pharmacy", "gender": "male", "category": "personnel"}, {"id": "P-38", "sl": 38, "name": "Md Akul Hossain", "name_bn": "মোঃ আকুল হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2009475", "army_bn": "২০০৯৪৭৫", "phone": "01758124559", "trade": "MA", "trade_bn": "এমএ", "appointment": "Civil Incharge", "gender": "male", "category": "personnel"}, {"id": "P-39", "sl": 39, "name": "Md Delowar Hossain", "name_bn": "মোঃ দেলোয়ার হোসেন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2010595", "army_bn": "২০১০৫৯৫", "phone": "01727803352", "trade": "MA", "trade_bn": "এমএ", "appointment": "Med Wd In Charge", "gender": "male", "category": "personnel"}, {"id": "P-40", "sl": 40, "name": "Ashraful Alam", "name_bn": "আশরাফুল আলম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011209", "army_bn": "২০১১২০৯", "phone": "01738675454", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-41", "sl": 41, "name": "Md Habibur Rahman", "name_bn": "মোঃ হাবিবুর রহমান", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011021", "army_bn": "২০১১০২১", "phone": "01614011363", "trade": "MA", "trade_bn": "এমএ", "appointment": "Medical Store", "gender": "male", "category": "personnel"}, {"id": "P-42", "sl": 42, "name": "Tahmina Akter Koli", "name_bn": "তাছলিমা আক্তার কলি", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012477", "army_bn": "২০১২৪৭৭", "phone": "01776635251", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-43", "sl": 43, "name": "Monira Khatun", "name_bn": "মনিরা খাতুন", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012483", "army_bn": "২০১২৪৮৩", "phone": "01632080161", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-44", "sl": 44, "name": "Papia Sultana", "name_bn": "পাপিয়া সুলতানা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012578", "army_bn": "২০১২৫৭৮", "phone": "01706128160", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-45", "sl": 45, "name": "Nazmun Nahar", "name_bn": "নাজমুন নাহার", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012487", "army_bn": "২০১২৪৮৭", "phone": "01709183427", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-46", "sl": 46, "name": "Most Tania Khatun", "name_bn": "মোছাঃ তানিয়া খাতুন", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012608", "army_bn": "২০১২৬০৮", "phone": "01304591367", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-47", "sl": 47, "name": "Monika Rani Saha", "name_bn": "মনিকা রানী সাহা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012848", "army_bn": "২০১২৮৪৮", "phone": "01709200355", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-48", "sl": 48, "name": "Most Safinaz Chowdhury", "name_bn": "মোছাঃ সাফিনাজ চৌধুরী", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012539", "army_bn": "২০১২৫৩৯", "phone": "01815444059", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-49", "sl": 49, "name": "Fatema Akter Liza", "name_bn": "ফাতেমা আক্তার লিজা", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012684", "army_bn": "২০১২৬৮৪", "phone": "01703360560", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-50", "sl": 50, "name": "Md Rimon Khan", "name_bn": "মোঃ রিমন খান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013618", "army_bn": "২০১৩৬১৮", "phone": "01871951522", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-51", "sl": 51, "name": "Md Mosarof Hossain", "name_bn": "মোঃ মোশারফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013681", "army_bn": "২০১৩৬৮১", "phone": "01780517839", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-52", "sl": 52, "name": "Md Raihan", "name_bn": "মোঃ রায়হান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013684", "army_bn": "২০১৩৬৮৪", "phone": "01762625012", "trade": "MA", "trade_bn": "এমএ", "appointment": "Comdt Runner", "gender": "male", "category": "personnel"}, {"id": "P-53", "sl": 53, "name": "Md Moniruzzaman", "name_bn": "মোঃ মনিরুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014069", "army_bn": "২০১৪০৬৯", "phone": "01646344328", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-54", "sl": 54, "name": "Md Shawon Mia", "name_bn": "মোঃ শাওন মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014098", "army_bn": "২০১৪০৯৮", "phone": "01764653434", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-55", "sl": 55, "name": "Biplob Sarkar", "name_bn": "বিপ্লব সরকার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014128", "army_bn": "২০১৪১২৮", "phone": "01609602987", "trade": "MA", "trade_bn": "এমএ", "appointment": "Coy Munsi", "gender": "male", "category": "personnel"}, {"id": "P-56", "sl": 56, "name": "Md Juwel Rana", "name_bn": "মোঃ জুয়েল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014238", "army_bn": "২০১৪২৩৮", "phone": "01916213671", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-57", "sl": 57, "name": "Tanvir Hasan Hridoy", "name_bn": "তানভির হাসান হৃদয়", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014175", "army_bn": "২০১৪১৭৫", "phone": "01992327057", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-58", "sl": 58, "name": "Rakibul Hasan", "name_bn": "রাকিবুল হাসান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014409", "army_bn": "২০১৪৪০৯", "phone": "01916880026", "trade": "MA", "trade_bn": "এমএ", "appointment": "Temp Att", "gender": "male", "category": "personnel"}, {"id": "P-59", "sl": 59, "name": "Md Rumman Ali", "name_bn": "মোঃ রুমান আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014626", "army_bn": "২০১৪৬২৬", "phone": "01738179995", "trade": "MA", "trade_bn": "এমএ", "appointment": "W/M Office", "gender": "male", "category": "personnel"}, {"id": "P-60", "sl": 60, "name": "Lima Akter", "name_bn": "লিমা আক্তার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014692", "army_bn": "২০১৪৬৯২", "phone": "01946833557", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-61", "sl": 61, "name": "Md Maruf Hossain", "name_bn": "মোঃ মারুফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014568", "army_bn": "২০১৪৫৬৮", "phone": "01763041633", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-62", "sl": 62, "name": "Md Roni Ali", "name_bn": "মোঃ রনি আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015697", "army_bn": "২০১৫৬৯৭", "phone": "01308102976", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-63", "sl": 63, "name": "Md Shariful Islam", "name_bn": "মোঃ শরিফুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015719", "army_bn": "২০১৫৭১৯", "phone": "01643753516", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-64", "sl": 64, "name": "Md Nazmul Huda Rabbani", "name_bn": "মোঃ নাজমুল হুদা রব্বানী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015721", "army_bn": "২০১৫৭২১", "phone": "01608530441", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-65", "sl": 65, "name": "Md Taijul Islam Fakir", "name_bn": "মোঃ তাইজুল ইসলাম ফকির", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015730", "army_bn": "২০১৫৭৩০", "phone": "01319471566", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-66", "sl": 66, "name": "Md Mahbub Hossen Shordar", "name_bn": "মোঃ মাহাবুব হোসেন সরদার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015808", "army_bn": "২০১৫৮০৮", "phone": "01603646616", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-67", "sl": 67, "name": "Md Israfil", "name_bn": "মোঃ ইসরাফিল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015812", "army_bn": "২০১৫৮১২", "phone": "01743879489", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-68", "sl": 68, "name": "Md Wahid Ali", "name_bn": "মোঃ অহিদ আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015815", "army_bn": "২০১৫৮১৫", "phone": "01762356232", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-69", "sl": 69, "name": "Md Siam Sadik Sumon", "name_bn": "মোঃ সিয়াম সাদিক সুমন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015835", "army_bn": "২০১৫৮৩৫", "phone": "01635056992", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-70", "sl": 70, "name": "Md Maidul Islam", "name_bn": "মোঃ মাইদুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015849", "army_bn": "২০১৫৮৪৯", "phone": "01314155512", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-71", "sl": 71, "name": "Olija Islam Mou", "name_bn": "এলিজা ইসলাম মৌ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015893", "army_bn": "২০১৫৮৯৩", "phone": "01825440087", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-72", "sl": 72, "name": "Md Habibur Rahman", "name_bn": "মোঃ হাবিবুর রহমান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015829", "army_bn": "২০১৫৮২৯", "phone": "01714596151", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-73", "sl": 73, "name": "Md Minhajul Islam", "name_bn": "মোঃ মিনহাজুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016275", "army_bn": "২০১৬২৭৫", "phone": "01602706754", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-74", "sl": 74, "name": "Md Shadhath Hossain", "name_bn": "মোঃ শাহাদাৎ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016361", "army_bn": "২০১৬৩৬১", "phone": "01874152830", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-75", "sl": 75, "name": "Md Tanvir Hossain", "name_bn": "মোঃ তানভীর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016364", "army_bn": "২০১৬৩৬৪", "phone": "01884354262", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-76", "sl": 76, "name": "Md Forkan Islam", "name_bn": "মোঃ ফোরকান ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016366", "army_bn": "২০১৬৩৬৬", "phone": "01963014458", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-77", "sl": 77, "name": "Md Niaz Mahmud", "name_bn": "মোঃ নিয়াজ মাহামুদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016369", "army_bn": "২০১৬৩৬৯", "phone": "01832075437", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-78", "sl": 78, "name": "Md Abu Jaher Islam Shamim", "name_bn": "মোঃ আবু জাহের ইসলাম শামীম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016374", "army_bn": "২০১৬৩৭৪", "phone": "01788472796", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-79", "sl": 79, "name": "Md Mahmudul Haque", "name_bn": "মোঃ মাহমুদুল হক", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016461", "army_bn": "২০১৬৪৬১", "phone": "01830416842", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-80", "sl": 80, "name": "Md Younus Ali", "name_bn": "মোঃ ইউনুস আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016485", "army_bn": "২০১৬৪৮৫", "phone": "01956976314", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-81", "sl": 81, "name": "Most Tania Sultana", "name_bn": "মোছাঃ তানিয়া সুলতানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016521", "army_bn": "২০১৬৫২১", "phone": "01328683272", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-82", "sl": 82, "name": "Most Juthi Akter", "name_bn": "মোছাঃ জুথী খাতুন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016527", "army_bn": "২০১৬৫২৭", "phone": "01760155593", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-83", "sl": 83, "name": "Md Ashique Hossain", "name_bn": "মোঃ আসীক হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016532", "army_bn": "২০১৬৫৩২", "phone": "01971798926", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-84", "sl": 84, "name": "Md Rohit Akondo", "name_bn": "মোঃ রহিদ আকন্দ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016334", "army_bn": "২০১৬৩৩৪", "phone": "01721149591", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-85", "sl": 85, "name": "Most Sumaya Sultana Biba", "name_bn": "মোছাঃ সুমাইয়া সুলতানা বিবা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016537", "army_bn": "২০১৬৫৩৭", "phone": "01786022931", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-86", "sl": 86, "name": "Most Jobaida Akter Rotna", "name_bn": "মোছাঃ জোবায়দা আক্তার রত্না", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016547", "army_bn": "২০১৬৫৪৭", "phone": "01317377562", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-87", "sl": 87, "name": "Kamona Akter", "name_bn": "কামনা আক্তার", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016576", "army_bn": "২০১৬৫৭৬", "phone": "01311119053", "trade": "MA", "trade_bn": "এমএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-88", "sl": 88, "name": "Md Abu Jafor", "name_bn": "মোঃ আবু জাফর", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-73459", "army_bn": "বিজেও-৭৩৪৫৯", "phone": "01304098450", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-89", "sl": 89, "name": "Md Yousuf Ali", "name_bn": "ইউসুফ আলী", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011294", "army_bn": "২০১১২৯৪", "phone": "01738706944", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-90", "sl": 90, "name": "Md Robiul Islam", "name_bn": "মোঃ রবিউল ইসলাম", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011634", "army_bn": "২০১১৬৩৪", "phone": "01773975566", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-91", "sl": 91, "name": "Md Manik Mia", "name_bn": "মোঃ মানিক মিয়া", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011769", "army_bn": "২০১১৭৬৯", "phone": "01322832483", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-92", "sl": 92, "name": "Shapla Parvin", "name_bn": "শাপলা পারভীন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012506", "army_bn": "২০১২৫০৬", "phone": "01710370448", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-93", "sl": 93, "name": "Angufa Khatun", "name_bn": "অজ্ঞুফা খাতুন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012558", "army_bn": "২০১২৫৫৮", "phone": "01757854715", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-94", "sl": 94, "name": "Mishkat Jahan Asha", "name_bn": "মিশকাত জাহান আশা", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012627", "army_bn": "২০১২৬২৭", "phone": "01705259618", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-95", "sl": 95, "name": "Rakib Hossain", "name_bn": "রাকিব হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013554", "army_bn": "২০১৩৫৫৪", "phone": "01765115322", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-96", "sl": 96, "name": "Md Mobinuzzaman", "name_bn": "মোঃ মবিনুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014251", "army_bn": "২০১৪২৫১", "phone": "01956768146", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-97", "sl": 97, "name": "Rakibul Islam", "name_bn": "রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014318", "army_bn": "২০১৪৩১৮", "phone": "0194627143", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-98", "sl": 98, "name": "Md Mamun Mondol", "name_bn": "মোঃ মামুন মন্ডল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014328", "army_bn": "২০১৪৩২৮", "phone": "01326603491", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-99", "sl": 99, "name": "Md Al Amin Hossain", "name_bn": "মোঃ আল আমিন হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014404", "army_bn": "২০১৪৪০৪", "phone": "01869190871", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-100", "sl": 100, "name": "Bipul Hossain", "name_bn": "বিপুল হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014666", "army_bn": "২০১৪৬৬৬", "phone": "01975482628", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-101", "sl": 101, "name": "Md Shakil Mia", "name_bn": "মোঃ শাকিল মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014654", "army_bn": "২০১৪৬৫৪", "phone": "01740467797", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-102", "sl": 102, "name": "Md Mamun Hossain", "name_bn": "মোঃ মামুন হোসাইন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015144", "army_bn": "২০১৫১৪৪", "phone": "01615306606", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-103", "sl": 103, "name": "Md Mehedi Hasan Wasi", "name_bn": "মোঃ মেহেদী হাসান ওয়اسى", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011551", "army_bn": "২০১১৫৫১", "phone": "01309412437", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-104", "sl": 104, "name": "Md Imran", "name_bn": "মোঃ ইমরান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011561", "army_bn": "২০১১৫৬১", "phone": "01319176062", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-105", "sl": 105, "name": "Md Sultan Shahria", "name_bn": "মোঃ সুলতান শাহরিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011564", "army_bn": "২০১১৫৬৪", "phone": "01821469538", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-106", "sl": 106, "name": "Md Nazmul Islam", "name_bn": "মোঃ নাজমুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015071", "army_bn": "২০১৫০৭১", "phone": "01992826381", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-107", "sl": 107, "name": "Rownoki Jannat", "name_bn": "রৌনকী জান্নাত", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015545", "army_bn": "২০১৫৫৪৫", "phone": "01763984333", "trade": "OTA", "trade_bn": "ওটিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-108", "sl": 108, "name": "Md Abdul Malek", "name_bn": "মোঃ আব্দুল মালেক", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008199", "army_bn": "২০০৮১৯৯", "phone": "01745235542", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-109", "sl": 109, "name": "Md Parvez Akter", "name_bn": "মোঃ পারভেজ আক্তার", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011572", "army_bn": "২০১১৫৭২", "phone": "01716964453", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-110", "sl": 110, "name": "Rima Akter", "name_bn": "রীমা আক্তার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012451", "army_bn": "২০১২৪৫১", "phone": "01617177142", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-111", "sl": 111, "name": "Md Manik Rashid", "name_bn": "মোঃ মানিক রশিদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014326", "army_bn": "২০১৪৩২৬", "phone": "01635124555", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-112", "sl": 112, "name": "Md Rakibul Islam", "name_bn": "মোঃ রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014704", "army_bn": "২০১৪৭০৪", "phone": "01781339541", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-113", "sl": 113, "name": "Md Dipu Khan", "name_bn": "মোঃ দিপু খাঁন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015192", "army_bn": "২০১৫১৯২", "phone": "01765189630", "trade": "Physio", "trade_bn": "ফিজিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-114", "sl": 114, "name": "Md Habib Ullah Talukder", "name_bn": "মোহাম্মদ হাবিব উল্লাহ তালুকদার", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-এনওয়াইএি", "army_bn": "বিজেও-এনওয়াইএি", "phone": "01715254193", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-115", "sl": 115, "name": "Md Tamzid Hossain", "name_bn": "মোঃ তামজিদ হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2010555", "army_bn": "২০১০৫৫৫", "phone": "01735820660", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-116", "sl": 116, "name": "Tamanna Kumkum", "name_bn": "তামান্না কুমকুম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012489", "army_bn": "২০১২৪৮৯", "phone": "01718867677", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-117", "sl": 117, "name": "Md Ripon Ali", "name_bn": "মোঃ রিপন আলী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015162", "army_bn": "২০১৫১৬২", "phone": "01798787201", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-118", "sl": 118, "name": "Md Mohiuddin Sheikh", "name_bn": "মোঃ মহিউদ্দিন শেখ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015166", "army_bn": "২০১৫১৬৬", "phone": "01940659229", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-119", "sl": 119, "name": "Safat", "name_bn": "সাফাত", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016229", "army_bn": "২০১৬২২৯", "phone": "01323417892", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-120", "sl": 120, "name": "Md Fahad Ahmed", "name_bn": "মোঃ ফাহাদ আহমেদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2016233", "army_bn": "২০১৬২৩৩", "phone": "01759094919", "trade": "Lab Tech", "trade_bn": "ল্যাবঃ টেকঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-121", "sl": 121, "name": "Md Kamal Uddin", "name_bn": "মোঃ কামাল উদ্দিন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2008379", "army_bn": "২০০৮৩৭৯", "phone": "01889393442", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-122", "sl": 122, "name": "Md Faruk Hossain", "name_bn": "মোঃ ফারুক হোসেন", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011763", "army_bn": "২০১১৭৬৩", "phone": "01740085562", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-123", "sl": 123, "name": "Imran Hossain", "name_bn": "ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014288", "army_bn": "২০১৪২৮৮", "phone": "01739713943", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-124", "sl": 124, "name": "Al Amin Hossain", "name_bn": "আল আমিন হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014691", "army_bn": "২০১৪৬৯১", "phone": "01310842016", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-125", "sl": 125, "name": "Md Sohel Rana", "name_bn": "মোঃ সোহেল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015067", "army_bn": "২০১৫০৬৭", "phone": "01761216213", "trade": "Dispenser", "trade_bn": "ডিসঃ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-126", "sl": 126, "name": "Md Faisal Alam", "name_bn": "মোঃ ফয়সাল আলম", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2011885", "army_bn": "২০১১৮৮৫", "phone": "01671685581", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-127", "sl": 127, "name": "Mariam Khatun", "name_bn": "মরিয়ম খাতুন", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012976", "army_bn": "২০১২৯৭৬", "phone": "01788976415", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-128", "sl": 128, "name": "Md Limon Dhali", "name_bn": "মোঃ লিমন ঢালী", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013905", "army_bn": "২০১৩৯০৫", "phone": "01756689073", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-129", "sl": 129, "name": "Rakibul Islam", "name_bn": "রাকিবুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014140", "army_bn": "২০১৪১৪০", "phone": "01648317902", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-130", "sl": 130, "name": "Md Torikul Islam", "name_bn": "মোঃ তরিকুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014586", "army_bn": "২০১৪৫৮৬", "phone": "01788428158", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-131", "sl": 131, "name": "Ibrahim Khalil", "name_bn": "ইব্রাহিম খলিল", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014688", "army_bn": "২০১৪৬৮৮", "phone": "01994519094", "trade": "Radiographer", "trade_bn": "রেডিও", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-132", "sl": 132, "name": "Md Faruk Khan", "name_bn": "মোহাম্মদ ফারুক খান", "rank_code": "SWO", "rank_bn": "সিনিঃ ওয়াঃ অফিঃ", "army_en": "BJO-73371", "army_bn": "বিজেও-৭৩৩৭১", "phone": "01733501606", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-133", "sl": 133, "name": "Md Abdul Kader", "name_bn": "মোঃ আব্দুল কাদের", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2011409", "army_bn": "২০১১৪০৯", "phone": "01686520202", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-134", "sl": 134, "name": "Sabrina M Sayla", "name_bn": "সাবরিনা এম সায়লা", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012672", "army_bn": "২০১২৬৭২", "phone": "01639252574", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-135", "sl": 135, "name": "Jesmin Akter", "name_bn": "জেসমিন আক্তার", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012361", "army_bn": "২০১২৩৬১", "phone": "01734745609", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-136", "sl": 136, "name": "Sultana Razia", "name_bn": "সুলতানা রাজিয়া", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2012701", "army_bn": "২০১২৭০১", "phone": "01605068354", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-137", "sl": 137, "name": "Md Tanvir Hossain", "name_bn": "মোঃ তানভীর হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013547", "army_bn": "২০১৩৫৪৭", "phone": "01773097239", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-138", "sl": 138, "name": "Md Jahirul Islam", "name_bn": "মোঃ জহিরুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013633", "army_bn": "২০১৩৬৩৩", "phone": "01607354583", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-139", "sl": 139, "name": "Sojib Ahmed", "name_bn": "সজীব আহম্মেদ", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2013682", "army_bn": "২০১৩৬৮২", "phone": "01828651330", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-140", "sl": 140, "name": "Md Shahadul Islam", "name_bn": "মোঃ শাহাদুল ইসলাম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2011441", "army_bn": "২০১১৪৪১", "phone": "01755081452", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-141", "sl": 141, "name": "Nizam Uddin", "name_bn": "নিজাম উদ্দিন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014574", "army_bn": "২০১৪৫৭৪", "phone": "01779944495", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-142", "sl": 142, "name": "Md Imran Hossain", "name_bn": "মোঃ ইমরান হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014612", "army_bn": "২০১৪৬১২", "phone": "01754920485", "trade": "ICA", "trade_bn": "আইসিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-143", "sl": 143, "name": "Fatema Akter", "name_bn": "ফাতেমা আক্তার", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2012924", "army_bn": "২০১২৯২৪", "phone": "01601036461", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "female", "category": "personnel"}, {"id": "P-144", "sl": 144, "name": "Md Sohanur Rahman", "name_bn": "মোঃ সোহানুর রহমান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015200", "army_bn": "২০১৫২০০", "phone": "01771738486", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-145", "sl": 145, "name": "Md Shakil Rana", "name_bn": "মোঃ শাকিল রানা", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014793", "army_bn": "২০১৪৭৯৩", "phone": "01642269415", "trade": "STA", "trade_bn": "এসটিএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-146", "sl": 146, "name": "Md Jahangir Alam", "name_bn": "মোঃ জাহাঙ্গীর আলম", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2014361", "army_bn": "২০১৪৩৬১", "phone": "01760238318", "trade": "PMA", "trade_bn": "পিএমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-147", "sl": 147, "name": "Md Shadhin Mia", "name_bn": "মোঃ স্বাধীন মিয়া", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2015016", "army_bn": "২০১৫০১৬", "phone": "01602371649", "trade": "PMA", "trade_bn": "পিএমএ", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-148", "sl": 148, "name": "Md Nasir Uddin", "name_bn": "মোঃ নাসির উদ্দিন", "rank_code": "WO", "rank_bn": "ওয়ারেন্ট অফিসার", "army_en": "BJO-77690", "army_bn": "বিজেও-৭৭৬৯০", "phone": "01758177400", "trade": "AOHM", "trade_bn": "এওএইচএম", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-149", "sl": 149, "name": "Md Jaminur Rahman", "name_bn": "মোঃ জামিনুর রহমান", "rank_code": "SGT", "rank_bn": "সার্জেন্ট", "army_en": "2414279", "army_bn": "২৪১৪২৭৯", "phone": "01763820851", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-150", "sl": 150, "name": "Ali Ahmed", "name_bn": "আলী আহমেদ", "rank_code": "CPL", "rank_bn": "কর্পোরাল", "army_en": "2414476", "army_bn": "২৪১৪৪৭৬", "phone": "01734185595", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-151", "sl": 151, "name": "Md Khalid Hasan", "name_bn": "মোঃ খালিদ হাসান", "rank_code": "LCPL", "rank_bn": "ল্যান্স কর্পোরাল", "army_en": "2417145", "army_bn": "২৪১৭১৪৫", "phone": "01766609828", "trade": "TBV", "trade_bn": "টিবিভি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-152", "sl": 152, "name": "Md Akhtaruzzaman", "name_bn": "মোঃ আখতারুজ্জামান", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2419132", "army_bn": "২৪১৯১৩২", "phone": "01787087502", "trade": "TBV", "trade_bn": "টিবিভি", "appointment": "", "gender": "male", "category": "personnel"}, {"id": "P-153", "sl": 153, "name": "A S M Ashraf Hossain", "name_bn": "এ এস এম আশরাফ হোসেন", "rank_code": "SNK", "rank_bn": "সৈনিক", "army_en": "2420025", "army_bn": "২৪২০০২৫", "phone": "01798558765", "trade": "OEM", "trade_bn": "ওইএম", "appointment": "", "gender": "male", "category": "personnel"}];
 
 (function(){
   "use strict";
 
   const RANK_ORDER = { "VIP": 1, "DUTY": 2, "EMRG": 3, "MO": 4, "SWO": 5, "WO": 6, "SGT": 7, "CPL": 8, "LCPL": 9, "SNK": 10 };
+
+  // Always fallback to DEFAULT_RAW_DATA so contacts are NEVER 0!
+  function getCachedContacts(){
+    try {
+      const stored = localStorage.getItem("cmh_contacts_cache_v4");
+      if(stored){
+        const parsed = JSON.parse(stored);
+        if(Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch(e){}
+    return JSON.parse(JSON.stringify(DEFAULT_RAW_DATA));
+  }
+
+  function setCachedContacts(data){
+    localStorage.setItem("cmh_contacts_cache_v4", JSON.stringify(data));
+  }
+
+  let CONTACTS = getCachedContacts();
+  let currentAuthUser = null;
 
   let state = {
     search: "",
@@ -849,6 +1044,12 @@ const RAW_DATA = [
     sort: "default"
   };
 
+  let adminState = {
+    search: "",
+    trade: "all"
+  };
+
+  // Cache Elements
   const el = {
     searchBox: document.getElementById("searchBox"),
     clearBtn: document.getElementById("clearBtn"),
@@ -860,6 +1061,9 @@ const RAW_DATA = [
     aboutBtn: document.getElementById("aboutBtn"),
     aboutModal: document.getElementById("aboutModal"),
     closeAboutBtn: document.getElementById("closeAboutBtn"),
+    openAdminLoginModalBtn: document.getElementById("openAdminLoginModalBtn"),
+    cloudSyncStatus: document.getElementById("cloudSyncStatus"),
+    // Detail Popup
     popupOverlay: document.getElementById("popupOverlay"),
     popupSheet: document.getElementById("popupSheet"),
     closeSheetBtn: document.getElementById("closeSheetBtn"),
@@ -879,51 +1083,51 @@ const RAW_DATA = [
     modalApptRow: document.getElementById("modalApptRow"),
     modalFullAppt: document.getElementById("modalFullAppt"),
     modalCallBtn: document.getElementById("modalCallBtn"),
-    modalWaBtn: document.getElementById("modalWaBtn")
+    modalWaBtn: document.getElementById("modalWaBtn"),
+    // Separate Login Modal
+    loginModal: document.getElementById("loginModal"),
+    adminEmailInput: document.getElementById("adminEmailInput"),
+    adminPassInput: document.getElementById("adminPassInput"),
+    adminLoginBtn: document.getElementById("adminLoginBtn"),
+    closeLoginModalBtn: document.getElementById("closeLoginModalBtn"),
+    // Admin Window
+    adminModal: document.getElementById("adminModal"),
+    closeAdminWindowBtn: document.getElementById("closeAdminWindowBtn"),
+    adminLogoutBtn: document.getElementById("adminLogoutBtn"),
+    adminSearchInput: document.getElementById("adminSearchInput"),
+    adminTradeFilter: document.getElementById("adminTradeFilter"),
+    adminContactList: document.getElementById("adminContactList"),
+    addNewContactBtn: document.getElementById("addNewContactBtn"),
+    syncInitialCloudBtn: document.getElementById("syncInitialCloudBtn"),
+    // Add/Edit Form
+    formModal: document.getElementById("formModal"),
+    formModalTitle: document.getElementById("formModalTitle"),
+    contactForm: document.getElementById("contactForm"),
+    formContactId: document.getElementById("formContactId"),
+    formCategory: document.getElementById("formCategory"),
+    formName: document.getElementById("formName"),
+    formNameBn: document.getElementById("formNameBn"),
+    formPhone: document.getElementById("formPhone"),
+    formRankCode: document.getElementById("formRankCode"),
+    formTrade: document.getElementById("formTrade"),
+    formTradeBn: document.getElementById("formTradeBn"),
+    formArmyEn: document.getElementById("formArmyEn"),
+    formArmyBn: document.getElementById("formArmyBn"),
+    formAppt: document.getElementById("formAppt"),
+    formGender: document.getElementById("formGender"),
+    formCancelBtn: document.getElementById("formCancelBtn"),
+    personnelFields: document.getElementById("personnelFields")
   };
 
-  function buildTradeCarousel(){
-    const tradeCounts = {};
-    RAW_DATA.forEach(d => {
-      const t = d.trade || "Other";
-      tradeCounts[t] = (tradeCounts[t] || 0) + 1;
-    });
-
-    const tradePills = [
-      { key: "all", label: "All Contacts", count: RAW_DATA.length, isImp: false },
-      { key: "Important", label: "⭐ Important", count: tradeCounts["Important"] || 22, isImp: true },
-      { key: "MA", label: "MA", count: tradeCounts["MA"] || 60, isImp: false },
-      { key: "OTA", label: "OTA", count: tradeCounts["OTA"] || 20, isImp: false },
-      { key: "MT", label: "MT", count: tradeCounts["MT"] || 12, isImp: false },
-      { key: "Clerk", label: "Clerk", count: tradeCounts["Clerk"] || 9, isImp: false },
-      { key: "ICA", label: "ICA", count: tradeCounts["ICA"] || 11, isImp: false },
-      { key: "Lab Tech", label: "Lab Tech", count: tradeCounts["Lab Tech"] || 7, isImp: false },
-      { key: "SMT", label: "SMT", count: tradeCounts["SMT"] || 6, isImp: false },
-      { key: "Physio", label: "Physio", count: tradeCounts["Physio"] || 6, isImp: false },
-      { key: "Radiographer", label: "Radio", count: tradeCounts["Radiographer"] || 6, isImp: false },
-      { key: "Dispenser", label: "Dispenser", count: tradeCounts["Dispenser"] || 5, isImp: false },
-      { key: "STA", label: "STA", count: tradeCounts["STA"] || 3, isImp: false },
-      { key: "OEM", label: "OEM", count: tradeCounts["OEM"] || 3, isImp: false },
-      { key: "TBV", label: "TBV", count: tradeCounts["TBV"] || 2, isImp: false },
-      { key: "PMA", label: "PMA", count: tradeCounts["PMA"] || 2, isImp: false },
-      { key: "AOHM", label: "AOHM", count: tradeCounts["AOHM"] || 1, isImp: false }
-    ];
-
-    el.tradeCarousel.innerHTML = tradePills.map((p, i) => `
-      <button class="trade-pill ${i === 0 ? 'active' : ''} ${p.isImp ? 'pill-important' : ''}" data-trade="${escapeHtml(p.key)}">
-        <span>${escapeHtml(p.label)}</span>
-        <span class="badge">${p.count}</span>
-      </button>
-    `).join("");
-
-    el.tradeCarousel.querySelectorAll(".trade-pill").forEach(pill => {
-      pill.addEventListener("click", () => {
-        el.tradeCarousel.querySelectorAll(".trade-pill").forEach(p => p.classList.remove("active"));
-        pill.classList.add("active");
-        state.trade = pill.dataset.trade;
-        pill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        renderList();
-      });
+  // Firebase Auth State Listener
+  if(auth){
+    auth.onAuthStateChanged(user => {
+      currentAuthUser = user;
+      if(user){
+        el.openAdminLoginModalBtn.innerHTML = `<span>⚙️ Open Admin Dashboard (${user.email.split('@')[0]})</span>`;
+      } else {
+        el.openAdminLoginModalBtn.innerHTML = `<span>🔒 Admin Login</span>`;
+      }
     });
   }
 
@@ -949,37 +1153,97 @@ const RAW_DATA = [
     return "https://wa.me/" + full;
   }
 
+  // Build Radial / Horizontal Trade Bar
+  function buildTradeCarousel(){
+    const tradeCounts = {};
+    CONTACTS.forEach(d => {
+      const t = d.trade || "Other";
+      tradeCounts[t] = (tradeCounts[t] || 0) + 1;
+    });
+
+    const knownPills = [
+      { key: "all", label: "All Contacts", count: CONTACTS.length, isImp: false },
+      { key: "Important", label: "⭐ Important", count: tradeCounts["Important"] || 0, isImp: true },
+      { key: "MA", label: "MA", count: tradeCounts["MA"] || 0, isImp: false },
+      { key: "OTA", label: "OTA", count: tradeCounts["OTA"] || 0, isImp: false },
+      { key: "MT", label: "MT", count: tradeCounts["MT"] || 0, isImp: false },
+      { key: "Clerk", label: "Clerk", count: tradeCounts["Clerk"] || 0, isImp: false },
+      { key: "ICA", label: "ICA", count: tradeCounts["ICA"] || 0, isImp: false },
+      { key: "Lab Tech", label: "Lab Tech", count: tradeCounts["Lab Tech"] || 0, isImp: false },
+      { key: "SMT", label: "SMT", count: tradeCounts["SMT"] || 0, isImp: false },
+      { key: "Physio", label: "Physio", count: tradeCounts["Physio"] || 0, isImp: false },
+      { key: "Radiographer", label: "Radio", count: tradeCounts["Radiographer"] || 0, isImp: false },
+      { key: "Dispenser", label: "Dispenser", count: tradeCounts["Dispenser"] || 0, isImp: false },
+      { key: "STA", label: "STA", count: tradeCounts["STA"] || 0, isImp: false },
+      { key: "OEM", label: "OEM", count: tradeCounts["OEM"] || 0, isImp: false },
+      { key: "TBV", label: "TBV", count: tradeCounts["TBV"] || 0, isImp: false },
+      { key: "PMA", label: "PMA", count: tradeCounts["PMA"] || 0, isImp: false },
+      { key: "AOHM", label: "AOHM", count: tradeCounts["AOHM"] || 0, isImp: false }
+    ];
+
+    const knownKeys = new Set(knownPills.map(p => p.key));
+    Object.keys(tradeCounts).forEach(k => {
+      if(!knownKeys.has(k) && tradeCounts[k] > 0){
+        knownPills.push({ key: k, label: k, count: tradeCounts[k], isImp: false });
+      }
+    });
+
+    el.tradeCarousel.innerHTML = knownPills
+      .filter(p => p.key === "all" || p.count > 0)
+      .map(p => `
+        <button class="trade-pill ${state.trade === p.key ? 'active' : ''} ${p.isImp ? 'pill-important' : ''}" data-trade="${escapeHtml(p.key)}">
+          <span>${escapeHtml(p.label)}</span>
+          <span class="badge">${p.count}</span>
+        </button>
+      `).join("");
+
+    const adminTrades = Array.from(new Set(CONTACTS.map(d => d.trade || "Other"))).sort();
+    el.adminTradeFilter.innerHTML = `<option value="all">All Trades (${CONTACTS.length})</option>` +
+      adminTrades.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)} (${tradeCounts[t] || 0})</option>`).join("");
+    el.adminTradeFilter.value = adminState.trade;
+
+    el.tradeCarousel.querySelectorAll(".trade-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        el.tradeCarousel.querySelectorAll(".trade-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        state.trade = pill.dataset.trade;
+        pill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        renderList();
+      });
+    });
+  }
+
   function getFilteredRows(){
     const q = state.search.trim().toLowerCase();
-    return RAW_DATA.filter(item => {
+    return CONTACTS.filter(item => {
       if(state.trade !== "all" && item.trade !== state.trade) return false;
       if(q){
         const match =
-          item.name.toLowerCase().includes(q) ||
-          item.name_bn.includes(q) ||
-          item.phone.includes(q) ||
-          item.army_en.toLowerCase().includes(q) ||
-          item.army_bn.includes(q) ||
-          item.rank_code.toLowerCase().includes(q) ||
-          item.rank_bn.includes(q) ||
-          item.trade.toLowerCase().includes(q) ||
-          item.trade_bn.includes(q) ||
+          (item.name && item.name.toLowerCase().includes(q)) ||
+          (item.name_bn && item.name_bn.includes(q)) ||
+          (item.phone && item.phone.includes(q)) ||
+          (item.army_en && item.army_en.toLowerCase().includes(q)) ||
+          (item.army_bn && item.army_bn.includes(q)) ||
+          (item.rank_code && item.rank_code.toLowerCase().includes(q)) ||
+          (item.rank_bn && item.rank_bn.includes(q)) ||
+          (item.trade && item.trade.toLowerCase().includes(q)) ||
+          (item.trade_bn && item.trade_bn.includes(q)) ||
           (item.appointment && item.appointment.toLowerCase().includes(q));
         if(!match) return false;
       }
       return true;
     }).sort((a,b) => {
-      if(state.sort === "name") return a.name.localeCompare(b.name);
+      if(state.sort === "name") return (a.name || "").localeCompare(b.name || "");
       if(state.sort === "rank"){
         const ra = RANK_ORDER[a.rank_code] || 99;
         const rb = RANK_ORDER[b.rank_code] || 99;
-        return (ra - rb) || a.name.localeCompare(b.name);
+        return (ra - rb) || (a.name || "").localeCompare(b.name || "");
       }
       if(state.trade === "all"){
         if(a.category === "important" && b.category !== "important") return -1;
         if(b.category === "important" && a.category !== "important") return 1;
       }
-      return a.sl - b.sl;
+      return (a.sl || 0) - (b.sl || 0);
     });
   }
 
@@ -1001,11 +1265,11 @@ const RAW_DATA = [
     const term = state.search.trim();
     el.cardContainer.innerHTML = rows.map(c => {
       const isImportant = c.category === "important";
-      const rankSub = isImportant ? "VIP" : (c.rank_bn.split(" ")[0]);
+      const rankSub = isImportant ? "VIP" : ((c.rank_bn || "").split(" ")[0] || c.rank_code);
       return `
-        <div class="contact-card ${c.gender} ${isImportant ? 'important' : ''}" data-id="${c.id}">
-          <div class="rank-badge" title="${escapeHtml(c.rank_bn)}">
-            ${escapeHtml(c.rank_code)}
+        <div class="contact-card ${c.gender || 'male'} ${isImportant ? 'important' : ''}" data-id="${c.id}">
+          <div class="rank-badge" title="${escapeHtml(c.rank_bn || c.rank_code)}">
+            ${escapeHtml(c.rank_code || 'SNK')}
             <small>${escapeHtml(rankSub)}</small>
           </div>
 
@@ -1019,13 +1283,16 @@ const RAW_DATA = [
 
             <div class="badges-line">
               ${c.appointment && !isImportant ? `<span class="chip chip-appt">${escapeHtml(c.appointment)}</span>` : ""}
-              ${isImportant ? `<span class="chip chip-imp">Emergency Appointment</span>` : `<span class="chip chip-trade">${escapeHtml(c.trade)}</span>`}
+              ${isImportant ? `<span class="chip chip-imp">Important Number</span>` : `<span class="chip chip-trade">${escapeHtml(c.trade || 'Other')}</span>`}
             </div>
           </div>
 
           <div class="card-quick-actions">
             <a class="quick-btn quick-call" href="tel:${escapeHtml(c.phone)}" title="Call Now" onclick="event.stopPropagation();">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.9.5 2.9.6a2 2 0 011.7 2z"/></svg>
+            </a>
+            <a class="quick-btn quick-wa" href="${getWaLink(c.phone)}" target="_blank" rel="noopener" title="WhatsApp" onclick="event.stopPropagation();">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-1-.3-.1-.5-.1-.7.1s-.8 1-.9 1.2c-.2.2-.3.2-.6.1s-1.3-.5-2.4-1.5c-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.1.2-.3.3-.4.1-.2 0-.3 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1.1 2.8 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.1-1.4-.1-.1-.3-.2-.5-.3z"/><path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2zm0 18.2a8.1 8.1 0 01-4.2-1.1l-.3-.2-3 .9.9-2.9-.2-.3A8.2 8.2 0 1112 20.2z"/></svg>
             </a>
             <div class="quick-btn quick-arrow" title="View details">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18l6-6-6-6"/></svg>
@@ -1036,20 +1303,21 @@ const RAW_DATA = [
     }).join("");
   }
 
+  // Show Details Popup
   function openDetailsPopup(id){
-    const person = RAW_DATA.find(d => d.id === id);
+    const person = CONTACTS.find(d => String(d.id) === String(id));
     if(!person) return;
 
     const isImportant = person.category === "important";
 
-    el.modalAvatar.className = "profile-avatar " + person.gender + (isImportant ? " important" : "");
-    el.modalRankCode.textContent = person.rank_code;
-    el.modalRankBn.textContent = isImportant ? "VIP" : person.rank_code;
+    el.modalAvatar.className = "profile-avatar " + (person.gender || "male") + (isImportant ? " important" : "");
+    el.modalRankCode.textContent = person.rank_code || (isImportant ? "VIP" : "SNK");
+    el.modalRankBn.textContent = isImportant ? "VIP" : (person.rank_code || "SNK");
 
     el.modalName.textContent = person.name;
     el.modalNameBn.textContent = (!isImportant && person.name_bn && person.name_bn !== person.name) ? `(${person.name_bn})` : "";
 
-    el.modalTrade.textContent = isImportant ? "Emergency Appointment" : `${person.trade} (${person.trade_bn})`;
+    el.modalTrade.textContent = isImportant ? "Important Contact" : `${person.trade} ${person.trade_bn ? '(' + person.trade_bn + ')' : ''}`;
 
     if(person.appointment && !isImportant){
       el.modalAppt.textContent = person.appointment;
@@ -1065,13 +1333,13 @@ const RAW_DATA = [
 
     if(!isImportant && person.army_en && person.army_en !== "N/A"){
       el.modalArmyRow.style.display = "flex";
-      el.modalArmyNo.textContent = `${person.army_en} (${person.army_bn})`;
+      el.modalArmyNo.textContent = `${person.army_en} ${person.army_bn ? '(' + person.army_bn + ')' : ''}`;
     } else {
       el.modalArmyRow.style.display = "none";
     }
 
-    el.modalFullRank.textContent = isImportant ? "Emergency / Key Appointment" : `${person.rank_bn} (${person.rank_code})`;
-    el.modalFullTrade.textContent = isImportant ? "CMH Savar Central" : `${person.trade} (${person.trade_bn})`;
+    el.modalFullRank.textContent = isImportant ? "Important Appointment" : `${person.rank_bn || person.rank_code} (${person.rank_code})`;
+    el.modalFullTrade.textContent = isImportant ? "CMH Savar Central" : `${person.trade} ${person.trade_bn ? '(' + person.trade_bn + ')' : ''}`;
 
     el.modalCallBtn.href = "tel:" + person.phone;
     el.modalWaBtn.href = getWaLink(person.phone);
@@ -1096,6 +1364,289 @@ const RAW_DATA = [
     el.popupOverlay.classList.remove("show");
   }
 
+  // ================= CLOUD FIRESTORE REALTIME SYNC =================
+  function initFirestoreSync(){
+    if(!db) return;
+    el.cloudSyncStatus.textContent = "Connecting Cloud...";
+
+    db.collection("cmh_contacts").onSnapshot((snapshot) => {
+      if(!snapshot.empty){
+        const list = [];
+        snapshot.forEach(doc => {
+          list.push(doc.data());
+        });
+        CONTACTS = list;
+        setCachedContacts(CONTACTS);
+        el.cloudSyncStatus.textContent = "⚡ Cloud Live";
+        buildTradeCarousel();
+        renderList();
+        if(el.adminModal.classList.contains("open")) renderAdminList();
+      } else {
+        // If Firestore is empty, show local 175 contacts and indicate ready to sync
+        console.log("Firestore empty! 175 default contacts loaded locally.");
+        el.cloudSyncStatus.textContent = "Ready to Sync";
+        buildTradeCarousel();
+        renderList();
+      }
+    }, (error) => {
+      console.warn("Firestore listener error:", error);
+      el.cloudSyncStatus.textContent = "Local Ready";
+      buildTradeCarousel();
+      renderList();
+    });
+  }
+
+  // Admin manually syncs initial 175 contacts to Cloud Firestore
+  async function seedInitialDataToFirestore(){
+    if(!db || !currentAuthUser){
+      alert("Please login as Admin first to sync data to Cloud!");
+      return;
+    }
+    try {
+      el.syncInitialCloudBtn.innerHTML = `<span>Uploading...</span>`;
+      const batch = db.batch();
+      DEFAULT_RAW_DATA.forEach(item => {
+        const docRef = db.collection("cmh_contacts").doc(item.id);
+        batch.set(docRef, item);
+      });
+      await batch.commit();
+      el.syncInitialCloudBtn.innerHTML = `<span>⚡ Synced Successfully!</span>`;
+      el.cloudSyncStatus.textContent = "⚡ Cloud Live";
+      alert("All 175 contacts successfully synced to Firebase Cloud Firestore!");
+    } catch(err){
+      console.error("Seeding error:", err);
+      el.syncInitialCloudBtn.innerHTML = `<span>⚡ Sync 175 to Cloud</span>`;
+      alert("Sync failed: " + err.message);
+    }
+  }
+
+  // ================= ADMIN DASHBOARD LOGIC =================
+  function openAdminDashboard(){
+    if(!currentAuthUser){
+      el.aboutModal.classList.remove("open");
+      el.loginModal.classList.add("open");
+      el.adminEmailInput.focus();
+      return;
+    }
+    el.aboutModal.classList.remove("open");
+    el.adminModal.classList.add("open");
+    adminState.search = "";
+    el.adminSearchInput.value = "";
+    renderAdminList();
+  }
+
+  function closeAdminDashboard(){
+    el.adminModal.classList.remove("open");
+  }
+
+  function getAdminFilteredRows(){
+    const q = adminState.search.trim().toLowerCase();
+    return CONTACTS.filter(item => {
+      if(adminState.trade !== "all" && item.trade !== adminState.trade) return false;
+      if(q){
+        const match =
+          (item.name && item.name.toLowerCase().includes(q)) ||
+          (item.name_bn && item.name_bn.includes(q)) ||
+          (item.phone && item.phone.includes(q)) ||
+          (item.trade && item.trade.toLowerCase().includes(q)) ||
+          (item.army_en && item.army_en.toLowerCase().includes(q)) ||
+          (item.appointment && item.appointment.toLowerCase().includes(q));
+        if(!match) return false;
+      }
+      return true;
+    }).sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+  }
+
+  function renderAdminList(){
+    const rows = getAdminFilteredRows();
+    if(rows.length === 0){
+      el.adminContactList.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-3);">No matching contacts found.</div>`;
+      return;
+    }
+
+    el.adminContactList.innerHTML = rows.map(c => `
+      <div class="admin-table-row">
+        <div class="row-left">
+          <div class="row-name">
+            <span style="font-size:11px; padding:1px 5px; border-radius:4px; background:var(--steel-glow); color:var(--steel); margin-right:4px;">${escapeHtml(c.rank_code || 'SNK')}</span>
+            ${escapeHtml(c.name)}
+          </div>
+          <div class="row-sub">
+            <span>📞 <b>${escapeHtml(c.phone)}</b></span>
+            <span>🏷️ <b>${escapeHtml(c.trade || 'Other')}</b></span>
+            ${c.army_en && c.army_en !== 'N/A' ? `<span>🎖️ ${escapeHtml(c.army_en)}</span>` : ''}
+            ${c.appointment ? `<span>📌 ${escapeHtml(c.appointment)}</span>` : ''}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="btn-edit" data-id="${c.id}">Edit</button>
+          <button type="button" class="btn-delete" data-id="${c.id}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // Open Add/Edit Modal Form
+  function openContactForm(editId = null){
+    if(!currentAuthUser){
+      alert("Authentication required. Please log in.");
+      return;
+    }
+    el.contactForm.reset();
+    if(editId){
+      const contact = CONTACTS.find(d => String(d.id) === String(editId));
+      if(!contact) return;
+      el.formModalTitle.textContent = "Edit Contact";
+      el.formContactId.value = contact.id;
+      el.formCategory.value = contact.category || "personnel";
+      el.formName.value = contact.name || "";
+      el.formNameBn.value = contact.name_bn || "";
+      el.formPhone.value = contact.phone || "";
+      el.formRankCode.value = contact.rank_code || "";
+      el.formTrade.value = contact.trade || "";
+      el.formTradeBn.value = contact.trade_bn || "";
+      el.formArmyEn.value = contact.army_en === "N/A" ? "" : (contact.army_en || "");
+      el.formArmyBn.value = contact.army_bn === "প্রযোজ্য নয়" ? "" : (contact.army_bn || "");
+      el.formAppt.value = contact.appointment || "";
+      el.formGender.value = contact.gender || "male";
+    } else {
+      el.formModalTitle.textContent = "Add New Contact";
+      el.formContactId.value = "";
+      el.formCategory.value = "personnel";
+      el.formGender.value = "male";
+      el.formRankCode.value = "SNK";
+      el.formTrade.value = "MA";
+      el.formTradeBn.value = "এমএ";
+    }
+    toggleCategoryFields();
+    el.formModal.classList.add("open");
+  }
+
+  function toggleCategoryFields(){
+    const isImp = el.formCategory.value === "important";
+    el.personnelFields.style.display = isImp ? "none" : "block";
+    if(isImp && !el.formContactId.value){
+      el.formRankCode.value = "VIP";
+      el.formTrade.value = "Important";
+      el.formTradeBn.value = "জরুরি নম্বর";
+    }
+  }
+
+  el.formCategory.addEventListener("change", toggleCategoryFields);
+
+  // Form Submit (Save / Edit -> writes directly to Firestore Cloud)
+  el.contactForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    if(!currentAuthUser){
+      alert("Authentication required. Please log in.");
+      return;
+    }
+
+    const id = el.formContactId.value || ("CUSTOM-" + Date.now());
+    const cat = el.formCategory.value;
+    const isImp = cat === "important";
+
+    const phoneClean = el.formPhone.value.trim().replace(/[^0-9]/g, "");
+
+    const newObj = {
+      id: id,
+      sl: el.formContactId.value ? (CONTACTS.find(d => String(d.id) === String(id))?.sl || (CONTACTS.length + 1)) : (CONTACTS.length + 1),
+      name: el.formName.value.trim(),
+      name_bn: el.formNameBn.value.trim() || el.formName.value.trim(),
+      rank_code: el.formRankCode.value.trim().toUpperCase() || (isImp ? "VIP" : "SNK"),
+      rank_bn: isImp ? "ইম্পর্টেন্ট" : (el.formRankCode.value.trim()),
+      army_en: isImp ? "N/A" : (el.formArmyEn.value.trim() || "N/A"),
+      army_bn: isImp ? "প্রযোজ্য নয়" : (el.formArmyBn.value.trim() || ""),
+      phone: phoneClean,
+      trade: el.formTrade.value.trim() || (isImp ? "Important" : "Other"),
+      trade_bn: el.formTradeBn.value.trim() || (isImp ? "জরুরি নম্বর" : ""),
+      appointment: el.formAppt.value.trim(),
+      gender: el.formGender.value || "male",
+      category: cat
+    };
+
+    // Save to Cloud Firestore
+    if(db){
+      try {
+        await db.collection("cmh_contacts").doc(id).set(newObj, { merge: true });
+      } catch(err){
+        console.error("Cloud save failed:", err);
+        alert("Firestore save error: " + err.message);
+        return;
+      }
+    }
+
+    const index = CONTACTS.findIndex(d => String(d.id) === String(id));
+    if(index !== -1){
+      CONTACTS[index] = { ...CONTACTS[index], ...newObj };
+    } else {
+      CONTACTS.unshift(newObj);
+    }
+    setCachedContacts(CONTACTS);
+
+    el.formModal.classList.remove("open");
+    buildTradeCarousel();
+    renderList();
+    renderAdminList();
+    alert("Saved successfully! All connected users are updated in real-time.");
+  });
+
+  // Admin List delegation (Edit & Delete -> Firestore delete)
+  el.adminContactList.addEventListener("click", async e => {
+    const editBtn = e.target.closest(".btn-edit");
+    if(editBtn){
+      const id = editBtn.dataset.id;
+      openContactForm(id);
+      return;
+    }
+
+    const delBtn = e.target.closest(".btn-delete");
+    if(delBtn){
+      if(!currentAuthUser){
+        alert("Authentication required. Please log in.");
+        return;
+      }
+      const id = delBtn.dataset.id;
+      const contact = CONTACTS.find(d => String(d.id) === String(id));
+      if(!contact) return;
+      if(confirm(`Are you sure you want to delete "${contact.name}" (${contact.phone})? This will delete it for everyone.`)){
+        if(db){
+          try {
+            await db.collection("cmh_contacts").doc(String(id)).delete();
+          } catch(err){
+            console.error("Cloud delete error:", err);
+            alert("Firestore delete error: " + err.message);
+            return;
+          }
+        }
+        CONTACTS = CONTACTS.filter(d => String(d.id) !== String(id));
+        setCachedContacts(CONTACTS);
+        buildTradeCarousel();
+        renderList();
+        renderAdminList();
+      }
+    }
+  });
+
+  // Sync 175 to Cloud button
+  el.syncInitialCloudBtn.addEventListener("click", seedInitialDataToFirestore);
+
+  // Admin Search & Filter
+  el.adminSearchInput.addEventListener("input", () => {
+    adminState.search = el.adminSearchInput.value;
+    renderAdminList();
+  });
+
+  el.adminTradeFilter.addEventListener("change", e => {
+    adminState.trade = e.target.value;
+    renderAdminList();
+  });
+
+  el.addNewContactBtn.addEventListener("click", () => openContactForm(null));
+  el.formCancelBtn.addEventListener("click", () => el.formModal.classList.remove("open"));
+  el.closeAdminWindowBtn.addEventListener("click", closeAdminDashboard);
+
+  // Card click event delegation (Opens detail popup)
   el.cardContainer.addEventListener("click", e => {
     const card = e.target.closest(".contact-card");
     if(card){
@@ -1109,6 +1660,7 @@ const RAW_DATA = [
     if(e.target === el.popupOverlay) closePopup();
   });
 
+  // Search Debounce
   let debId;
   el.searchBox.addEventListener("input", () => {
     el.clearBtn.classList.toggle("show", !!el.searchBox.value);
@@ -1132,12 +1684,57 @@ const RAW_DATA = [
     renderList();
   });
 
+  // About Modal
   el.aboutBtn.addEventListener("click", () => el.aboutModal.classList.add("open"));
   el.closeAboutBtn.addEventListener("click", () => el.aboutModal.classList.remove("open"));
   el.aboutModal.addEventListener("click", e => {
     if(e.target === el.aboutModal) el.aboutModal.classList.remove("open");
   });
 
+  // Open Login Modal from hidden button
+  el.openAdminLoginModalBtn.addEventListener("click", openAdminDashboard);
+  el.closeLoginModalBtn.addEventListener("click", () => el.loginModal.classList.remove("open"));
+  el.loginModal.addEventListener("click", e => {
+    if(e.target === el.loginModal) el.loginModal.classList.remove("open");
+  });
+
+  // Firebase Email/Password Login Event
+  el.adminLoginBtn.addEventListener("click", async () => {
+    if(!auth){
+      alert("Firebase Auth is not available.");
+      return;
+    }
+    const email = el.adminEmailInput.value.trim();
+    const pass = el.adminPassInput.value.trim();
+    if(!email || !pass){
+      alert("Please enter both Admin Email and Password!");
+      return;
+    }
+
+    try {
+      el.adminLoginBtn.textContent = "Verifying...";
+      await auth.signInWithEmailAndPassword(email, pass);
+      el.adminEmailInput.value = "";
+      el.adminPassInput.value = "";
+      el.adminLoginBtn.textContent = "Login to Dashboard";
+      el.loginModal.classList.remove("open");
+      alert("Admin Login Successful!");
+      openAdminDashboard();
+    } catch(err){
+      el.adminLoginBtn.textContent = "Login to Dashboard";
+      alert("Login Failed: " + err.message);
+    }
+  });
+
+  el.adminLogoutBtn.addEventListener("click", async () => {
+    if(auth){
+      await auth.signOut();
+      closeAdminDashboard();
+      alert("Logged out successfully.");
+    }
+  });
+
+  // Dark Theme
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const savedTheme = localStorage.getItem("cmh_theme") || (prefersDark ? "dark" : "light");
   document.documentElement.setAttribute("data-theme", savedTheme);
@@ -1149,8 +1746,12 @@ const RAW_DATA = [
     localStorage.setItem("cmh_theme", next);
   });
 
+  // Initialize App
   buildTradeCarousel();
   renderList();
+
+  // Connect Cloud Firestore Realtime Sync
+  initFirestoreSync();
 })();
 </script>
 </body>
